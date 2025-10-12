@@ -14,7 +14,7 @@ type Pressure struct {
 	common.Metrics
 }
 
-func (p *Pressure) GenerateData() {
+func (p *Pressure) GenerateData(pressure_chan chan string) {
 	staticNum := rand.Intn(len(DeviceIds))
 
 	p.Id = uuid.New().String()
@@ -53,6 +53,11 @@ func (p *Pressure) GenerateData() {
 		p.Trend = "stable"
 	}
 
-	str, _ := json.Marshal(p)
-	fmt.Printf("pressure: %v\n\n", string(str))
+	pressureData, err := json.Marshal(p)
+	if err != nil {
+		fmt.Printf("Error marshaling pressure data: %v", err)
+		return
+	}
+	pressure_chan <- string(pressureData)
+	// fmt.Printf("pressure: %v\n\n", string(pressureData))
 }

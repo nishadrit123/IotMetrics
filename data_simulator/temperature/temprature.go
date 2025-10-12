@@ -15,7 +15,7 @@ type Temperature struct {
 	common.Metrics
 }
 
-func (t *Temperature) GenerateData() {
+func (t *Temperature) GenerateData(temprature_chan chan string) {
 	staticnum := rand.Intn(len(DeviceIds))
 
 	// static
@@ -54,6 +54,11 @@ func (t *Temperature) GenerateData() {
 		t.NextRead = time.Now().Add(t.UpdateInterval)
 	}
 
-	str_t, _ := json.Marshal(t)
-	fmt.Printf("temp: %v\n\n", string(str_t))
+	temperatureData, err := json.Marshal(t)
+	if err != nil {
+		fmt.Printf("Error marshaling temperature data: %v", err)
+		return
+	}
+	temprature_chan <- string(temperatureData)
+	// fmt.Printf("temp: %v\n\n", string(temperatureData))
 }

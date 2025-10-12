@@ -14,7 +14,7 @@ type Humidity struct {
 	common.Metrics
 }
 
-func (h *Humidity) GenerateData() {
+func (h *Humidity) GenerateData(humidity_chan chan string) {
 	staticNum := rand.Intn(len(DeviceIds))
 
 	h.Id = uuid.New().String()
@@ -53,6 +53,11 @@ func (h *Humidity) GenerateData() {
 		h.Trend = "stable"
 	}
 
-	str, _ := json.Marshal(h)
-	fmt.Printf("humidity: %v\n\n", string(str))
+	humidityData, err := json.Marshal(h)
+	if err != nil {
+		fmt.Printf("Error marshaling humidity data: %v", err)
+		return
+	}
+	humidity_chan <- string(humidityData)
+	// fmt.Printf("humidity: %v\n\n", string(humidityData))
 }

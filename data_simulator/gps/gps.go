@@ -14,7 +14,7 @@ type GPS struct {
 	common.Metrics
 }
 
-func (g *GPS) GenerateData() {
+func (g *GPS) GenerateData(gps_chan chan string) {
 	staticNum := rand.Intn(len(DeviceIds))
 
 	// static
@@ -57,6 +57,11 @@ func (g *GPS) GenerateData() {
 		g.NextRead = time.Now().Add(g.UpdateInterval)
 	}
 
-	str, _ := json.Marshal(g)
-	fmt.Printf("gps: %v\n\n", string(str))
+	gpsData, err := json.Marshal(g)
+	if err != nil {
+		fmt.Printf("Error marshaling GPS data: %v", err)
+		return
+	}
+	gps_chan <- string(gpsData)
+	// fmt.Printf("gps: %v\n\n", string(gpsData))
 }
