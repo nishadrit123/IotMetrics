@@ -12,31 +12,6 @@ var CPUId = []string{
 	"CPU-d49f8a15", "CPU-7c2d1e63", "CPU-fb8a6d27", "CPU-9a3e2b74", "CPU-1f6d4e58",
 }
 
-var CPUName = []string{
-	"alpha-core-01", "alpha-core-02", "beta-node-01", "beta-node-02", "gamma-cpu-01", "gamma-cpu-02", "delta-engine-01", "delta-engine-02", "epsilon-core-01", "zeta-node-01", "eta-cpu-01", "theta-core-01", "iota-engine-01", "kappa-node-01", "lambda-cpu-01",
-}
-
-var CPULocation = []string{
-	"Mumbai, India", "Delhi, India", "Bangalore, India", "Hyderabad, India", "Chennai, India",
-	"Pune, India", "Ahmedabad, India", "Singapore", "Frankfurt, Germany", "London, UK",
-	"New York, USA", "San Francisco, USA", "Tokyo, Japan", "Sydney, Australia", "Toronto, Canada",
-}
-
-var CPUModels = []string{
-	"Intel Xeon E5-2690 v4", "Intel Xeon Gold 6230", "AMD EPYC 7742", "Intel Core i9-12900K",
-	"AMD Ryzen 9 7950X", "Intel Xeon Platinum 8280", "AMD EPYC 7302P", "Intel Core i7-13700K",
-	"Intel Xeon Silver 4214", "AMD Ryzen 7 5800X3D", "Intel Core i5-12600K", "Apple M2 Ultra",
-	"AMD EPYC 9654", "Intel Xeon D-2183IT", "AMD Ryzen Threadripper PRO 5995WX",
-}
-
-var CPUCore = []int{
-	4, 6, 8, 12, 16, 10, 8, 6, 4, 12, 8, 14, 6, 8, 16,
-}
-
-var CPUFrequency = []float64{
-	2.4, 3.1, 2.9, 3.5, 3.8, 2.6, 2.8, 3.3, 3.0, 2.5, 3.7, 4.0, 2.2, 3.2, 3.9,
-}
-
 var CPUbaselineUsage = []float64{
 	12.5, 20.0, 35.0, 10.0, 50.0, 25.0, 18.0, 40.0, 60.0, 28.0,
 }

@@ -6,41 +6,31 @@ import (
 	"iot/data_simulator/humidity"
 	"iot/data_simulator/pressure"
 	"iot/data_simulator/temperature"
-	"log"
 	"time"
 )
 
 var (
-	cpuSensor         MetricsType
-	temperatureSensor MetricsType
-	HumiditySensor    MetricsType
-	PressureSensor    MetricsType
-	GPSSensor         MetricsType
+	cpuBuffer         []string
+	temperatureBuffer []string
+	humidityBuffer    []string
+	pressureBuffer    []string
+	gpsBuffer         []string
 )
 
 func SimulateData() {
-	cpuSensor = &cpu.CPU{}
 	cpu_chan := make(chan string, CPUChanSize)
-
-	temperatureSensor = &temperature.Temperature{}
 	temperature_chan := make(chan string, TemperatureChanSize)
-
-	HumiditySensor = &humidity.Humidity{}
 	humidity_chan := make(chan string, HumidityChanSize)
-
-	PressureSensor = &pressure.Pressure{}
 	pressure_chan := make(chan string, PressureChanSize)
-
-	GPSSensor = &gps.GPS{}
 	gps_chan := make(chan string, GPSChanSize)
 
 	go func() {
 		for i := 0; i < NumDevices; i++ {
-			go SimulateCPUData(cpuSensor, cpu_chan)
-			go SimulateTemperatureData(temperatureSensor, temperature_chan)
-			go SimulateHumidityData(HumiditySensor, humidity_chan)
-			go SimulatePressureData(PressureSensor, pressure_chan)
-			go SimulateGPSData(GPSSensor, gps_chan)
+			go SimulateCPUData(&cpu.CPU{}, cpu_chan)
+			go SimulateTemperatureData(&temperature.Temperature{}, temperature_chan)
+			go SimulateHumidityData(&humidity.Humidity{}, humidity_chan)
+			go SimulatePressureData(&pressure.Pressure{}, pressure_chan)
+			go SimulateGPSData(&gps.GPS{}, gps_chan)
 			time.Sleep(2 * time.Second) // Stagger the start times slightly
 		}
 	}()
@@ -49,15 +39,30 @@ func SimulateData() {
 		for {
 			select {
 			case data := <-cpu_chan:
-				log.Printf("cpu channel: %v\n\n", data)
+				cpuBuffer = append(cpuBuffer, data)
+				if len(cpuBuffer) > CPUBatchSize {
+					// InsertBatchtoClickHouse("cpu_metrics", cpuBuffer)
+				}
 			case data := <-temperature_chan:
-				log.Printf("temperature channel: %v\n\n", data)
+				temperatureBuffer = append(temperatureBuffer, data)
+				if len(temperatureBuffer) > TemperatureBatchSize {
+					// InsertBatchtoClickHouse("temperature_metrics", temperatureBuffer)
+				}
 			case data := <-humidity_chan:
-				log.Printf("humidity channel: %v\n\n", data)
+				humidityBuffer = append(humidityBuffer, data)
+				if len(humidityBuffer) > HumidityBatchSize {
+					// InsertBatchtoClickHouse("humidity_metrics", humidityBuffer)
+				}
 			case data := <-pressure_chan:
-				log.Printf("pressure channel: %v\n\n", data)
+				pressureBuffer = append(pressureBuffer, data)
+				if len(pressureBuffer) > PressureBatchSize {
+					// InsertBatchtoClickHouse("pressure_metrics", pressureBuffer)
+				}
 			case data := <-gps_chan:
-				log.Printf("gps channel: %v\n\n", data)
+				gpsBuffer = append(gpsBuffer, data)
+				if len(gpsBuffer) > GPSBatchSize {
+					// InsertBatchtoClickHouse("gps_metrics", gpsBuffer)
+				}
 			default:
 				time.Sleep(100 * time.Millisecond) // Prevent busy waiting
 			}

@@ -21,11 +21,6 @@ func (c *CPU) GenerateData(cpu_chan chan string) {
 	c.Id = uuid.New().String()
 	c.DeviceId = CPUId[staticnum]
 	c.DeviceName = DeviceName
-	c.HostName = CPUName[staticnum]
-	c.Location = CPULocation[staticnum]
-	c.Model = CPUModels[staticnum]
-	c.CoreCount = CPUCore[staticnum]
-	c.Frequency = CPUFrequency[staticnum]
 
 	// static per run
 	c.BaselineUsage = CPUbaselineUsage[rand.Intn(len(CPUbaselineUsage))]
