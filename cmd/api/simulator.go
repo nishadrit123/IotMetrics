@@ -1,28 +1,30 @@
 package main
 
 import (
+	"iot/data_simulator/common"
 	"iot/data_simulator/cpu"
 	"iot/data_simulator/gps"
 	"iot/data_simulator/humidity"
 	"iot/data_simulator/pressure"
 	"iot/data_simulator/temperature"
+	"iot/internal/store"
 	"time"
 )
 
 var (
-	cpuBuffer         []string
-	temperatureBuffer []string
-	humidityBuffer    []string
-	pressureBuffer    []string
-	gpsBuffer         []string
+	cpuBuffer         []common.Metrics
+	temperatureBuffer []common.Metrics
+	humidityBuffer    []common.Metrics
+	pressureBuffer    []common.Metrics
+	gpsBuffer         []common.Metrics
 )
 
-func SimulateData() {
-	cpu_chan := make(chan string, CPUChanSize)
-	temperature_chan := make(chan string, TemperatureChanSize)
-	humidity_chan := make(chan string, HumidityChanSize)
-	pressure_chan := make(chan string, PressureChanSize)
-	gps_chan := make(chan string, GPSChanSize)
+func SimulateData(st store.Store) {
+	cpu_chan := make(chan common.Metrics, CPUChanSize)
+	temperature_chan := make(chan common.Metrics, TemperatureChanSize)
+	humidity_chan := make(chan common.Metrics, HumidityChanSize)
+	pressure_chan := make(chan common.Metrics, PressureChanSize)
+	gps_chan := make(chan common.Metrics, GPSChanSize)
 
 	go func() {
 		for i := 0; i < NumDevices; i++ {
@@ -41,27 +43,32 @@ func SimulateData() {
 			case data := <-cpu_chan:
 				cpuBuffer = append(cpuBuffer, data)
 				if len(cpuBuffer) > CPUBatchSize {
-					// InsertBatchtoClickHouse("cpu_metrics", cpuBuffer)
+					st.CPU.(*store.CPUStore).InsertBatch(cpuBuffer)
+					cpuBuffer = cpuBuffer[:0]
 				}
 			case data := <-temperature_chan:
 				temperatureBuffer = append(temperatureBuffer, data)
 				if len(temperatureBuffer) > TemperatureBatchSize {
-					// InsertBatchtoClickHouse("temperature_metrics", temperatureBuffer)
+					st.Temperature.(*store.TemperatureStore).InsertBatch(temperatureBuffer)
+					temperatureBuffer = temperatureBuffer[:0]
 				}
 			case data := <-humidity_chan:
 				humidityBuffer = append(humidityBuffer, data)
 				if len(humidityBuffer) > HumidityBatchSize {
-					// InsertBatchtoClickHouse("humidity_metrics", humidityBuffer)
+					st.Humidity.(*store.HumidityStore).InsertBatch(humidityBuffer)
+					humidityBuffer = humidityBuffer[:0]
 				}
 			case data := <-pressure_chan:
 				pressureBuffer = append(pressureBuffer, data)
 				if len(pressureBuffer) > PressureBatchSize {
-					// InsertBatchtoClickHouse("pressure_metrics", pressureBuffer)
+					st.Pressure.(*store.PressureStore).InsertBatch(pressureBuffer)
+					pressureBuffer = pressureBuffer[:0]
 				}
 			case data := <-gps_chan:
 				gpsBuffer = append(gpsBuffer, data)
 				if len(gpsBuffer) > GPSBatchSize {
-					// InsertBatchtoClickHouse("gps_metrics", gpsBuffer)
+					st.GPS.(*store.GPSStore).InsertBatch(gpsBuffer)
+					gpsBuffer = gpsBuffer[:0]
 				}
 			default:
 				time.Sleep(100 * time.Millisecond) // Prevent busy waiting
@@ -70,7 +77,7 @@ func SimulateData() {
 	}()
 }
 
-func SimulateCPUData(sensor MetricsType, cpu_chan chan string) {
+func SimulateCPUData(sensor MetricsType, cpu_chan chan common.Metrics) {
 	for {
 		sensor.GenerateData(cpu_chan)
 		if cpuTyped, ok := sensor.(*cpu.CPU); ok {
@@ -81,7 +88,7 @@ func SimulateCPUData(sensor MetricsType, cpu_chan chan string) {
 	}
 }
 
-func SimulateTemperatureData(sensor MetricsType, temperature_chan chan string) {
+func SimulateTemperatureData(sensor MetricsType, temperature_chan chan common.Metrics) {
 	for {
 		sensor.GenerateData(temperature_chan)
 		if tempTyped, ok := sensor.(*temperature.Temperature); ok {
@@ -92,7 +99,7 @@ func SimulateTemperatureData(sensor MetricsType, temperature_chan chan string) {
 	}
 }
 
-func SimulateHumidityData(sensor MetricsType, humidity_chan chan string) {
+func SimulateHumidityData(sensor MetricsType, humidity_chan chan common.Metrics) {
 	for {
 		sensor.GenerateData(humidity_chan)
 		if humTyped, ok := sensor.(*humidity.Humidity); ok {
@@ -103,7 +110,7 @@ func SimulateHumidityData(sensor MetricsType, humidity_chan chan string) {
 	}
 }
 
-func SimulatePressureData(sensor MetricsType, pressure_chan chan string) {
+func SimulatePressureData(sensor MetricsType, pressure_chan chan common.Metrics) {
 	for {
 		sensor.GenerateData(pressure_chan)
 		if presTyped, ok := sensor.(*pressure.Pressure); ok {
@@ -114,7 +121,7 @@ func SimulatePressureData(sensor MetricsType, pressure_chan chan string) {
 	}
 }
 
-func SimulateGPSData(sensor MetricsType, gps_chan chan string) {
+func SimulateGPSData(sensor MetricsType, gps_chan chan common.Metrics) {
 	for {
 		sensor.GenerateData(gps_chan)
 		if gpsTyped, ok := sensor.(*gps.GPS); ok {

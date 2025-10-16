@@ -1,9 +1,7 @@
 package cpu
 
 import (
-	"encoding/json"
 	"iot/data_simulator/common"
-	"log"
 	"math/rand"
 	"time"
 
@@ -14,7 +12,7 @@ type CPU struct {
 	common.Metrics
 }
 
-func (c *CPU) GenerateData(cpu_chan chan string) {
+func (c *CPU) GenerateData(cpu_chan chan common.Metrics) {
 	staticnum := rand.Intn(len(CPUId))
 
 	// static
@@ -40,11 +38,12 @@ func (c *CPU) GenerateData(cpu_chan chan string) {
 		c.NextRead = time.Now().Add(c.UpdateInterval)
 	}
 
-	cpuData, err := json.Marshal(c)
-	if err != nil {
-		log.Printf("Error marshaling CPU data: %v", err)
+	cpu_chan <- c.Metrics
 
-	}
-	cpu_chan <- string(cpuData)
-	// fmt.Printf("cpu: %v\n\n", string(cpuData))
+	// cpuData, err := json.Marshal(c)
+	// if err != nil {
+	// 	log.Printf("Error marshaling CPU data: %v", err)
+
+	// }
+	// log.Printf("cpu: %v\n\n", string(cpuData))
 }
