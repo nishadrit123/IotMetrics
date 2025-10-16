@@ -5,9 +5,16 @@ import (
 	"iot/internal/env"
 	"iot/internal/store"
 	"log"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	dbconfig := &dbconfig{
 		user: env.GetString("CH_USER", "default"),
 		pswd: env.GetString("CH_PSWD", ""),

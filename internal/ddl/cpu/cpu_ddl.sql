@@ -1,5 +1,7 @@
-CREATE DATABSE metrics;
+CREATE DATABASE metrics;
 USE metrics;
+-- DROP DATABASE metrics
+-- SHOW TABLES FROM metrics; 
 
 CREATE TABLE cpu_metadata (
     device_id String,
@@ -39,14 +41,14 @@ CREATE DICTIONARY cpu_metadatadict (
     frequency Float64
 )
 PRIMARY KEY device_id
-source (CLICKHOSUE(table 'cpu_metadata'))
-lifetime(min 1 max 10)
+source (CLICKHOUSE(table 'cpu_metadata'))
+lifetime(0) -- no updates required as metadata will always be static
 layout(FLAT()); 
 
 --------------------------------------- Incremental MV 1 ---------------------------------------
 
 CREATE TABLE CPU_PER_LOCATION (
-    loc string, 
+    loc String, 
     maxSpikeMagnitude AggregateFunction(max, Float64),
     avgCurrentUsage AggregateFunction(avg, Float64),
     totalCPUTemperature AggregateFunction(sum, Float64)
@@ -70,7 +72,7 @@ GROUP BY loc;
 --------------------------------------- Incremental MV 2 ---------------------------------------
 
 CREATE TABLE CPU_PER_MODEL (
-    model string, 
+    model String, 
     uniqFrequency AggregateFunction(uniq, Float64),
     countNoiseLevel AggregateFunction(count, Float64)
 ) ENGINE = AggregatingMergeTree()
@@ -121,6 +123,7 @@ GROUP BY loc, hour;
 
 
 --------------------------------------- Refresh MV 2 ---------------------------------------
+
 CREATE TABLE cpu_daily_summary (
     loc String,
     day Date,
