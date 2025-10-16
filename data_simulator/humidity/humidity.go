@@ -1,8 +1,6 @@
 package humidity
 
 import (
-	"encoding/json"
-	"fmt"
 	"iot/data_simulator/common"
 	"math/rand"
 	"time"
@@ -14,7 +12,7 @@ type Humidity struct {
 	common.Metrics
 }
 
-func (h *Humidity) GenerateData(humidity_chan chan string) {
+func (h *Humidity) GenerateData(humidity_chan chan common.Metrics) {
 	staticNum := rand.Intn(len(DeviceIds))
 
 	h.Id = uuid.New().String()
@@ -53,11 +51,5 @@ func (h *Humidity) GenerateData(humidity_chan chan string) {
 		h.Trend = "stable"
 	}
 
-	humidityData, err := json.Marshal(h)
-	if err != nil {
-		fmt.Printf("Error marshaling humidity data: %v", err)
-		return
-	}
-	humidity_chan <- string(humidityData)
-	// fmt.Printf("humidity: %v\n\n", string(humidityData))
+	humidity_chan <- h.Metrics
 }

@@ -1,8 +1,6 @@
 package pressure
 
 import (
-	"encoding/json"
-	"fmt"
 	"iot/data_simulator/common"
 	"math/rand"
 	"time"
@@ -14,7 +12,7 @@ type Pressure struct {
 	common.Metrics
 }
 
-func (p *Pressure) GenerateData(pressure_chan chan string) {
+func (p *Pressure) GenerateData(pressure_chan chan common.Metrics) {
 	staticNum := rand.Intn(len(DeviceIds))
 
 	p.Id = uuid.New().String()
@@ -53,11 +51,5 @@ func (p *Pressure) GenerateData(pressure_chan chan string) {
 		p.Trend = "stable"
 	}
 
-	pressureData, err := json.Marshal(p)
-	if err != nil {
-		fmt.Printf("Error marshaling pressure data: %v", err)
-		return
-	}
-	pressure_chan <- string(pressureData)
-	// fmt.Printf("pressure: %v\n\n", string(pressureData))
+	pressure_chan <- p.Metrics
 }

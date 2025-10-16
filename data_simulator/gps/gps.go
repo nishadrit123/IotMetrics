@@ -1,8 +1,6 @@
 package gps
 
 import (
-	"encoding/json"
-	"fmt"
 	"iot/data_simulator/common"
 	"math/rand"
 	"time"
@@ -14,7 +12,7 @@ type GPS struct {
 	common.Metrics
 }
 
-func (g *GPS) GenerateData(gps_chan chan string) {
+func (g *GPS) GenerateData(gps_chan chan common.Metrics) {
 	staticNum := rand.Intn(len(DeviceIds))
 
 	// static
@@ -57,11 +55,5 @@ func (g *GPS) GenerateData(gps_chan chan string) {
 		g.NextRead = time.Now().Add(g.UpdateInterval)
 	}
 
-	gpsData, err := json.Marshal(g)
-	if err != nil {
-		fmt.Printf("Error marshaling GPS data: %v", err)
-		return
-	}
-	gps_chan <- string(gpsData)
-	// fmt.Printf("gps: %v\n\n", string(gpsData))
+	gps_chan <- g.Metrics
 }

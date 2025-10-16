@@ -1,8 +1,6 @@
 package temperature
 
 import (
-	"encoding/json"
-	"fmt"
 	"iot/data_simulator/common"
 	"time"
 
@@ -15,7 +13,7 @@ type Temperature struct {
 	common.Metrics
 }
 
-func (t *Temperature) GenerateData(temprature_chan chan string) {
+func (t *Temperature) GenerateData(temprature_chan chan common.Metrics) {
 	staticnum := rand.Intn(len(DeviceIds))
 
 	// static
@@ -54,11 +52,5 @@ func (t *Temperature) GenerateData(temprature_chan chan string) {
 		t.NextRead = time.Now().Add(t.UpdateInterval)
 	}
 
-	temperatureData, err := json.Marshal(t)
-	if err != nil {
-		fmt.Printf("Error marshaling temperature data: %v", err)
-		return
-	}
-	temprature_chan <- string(temperatureData)
-	// fmt.Printf("temp: %v\n\n", string(temperatureData))
+	temprature_chan <- t.Metrics
 }

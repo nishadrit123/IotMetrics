@@ -1,5 +1,7 @@
 package main
 
+import "iot/data_simulator/common"
+
 const (
 	NumDevices = 5
 
@@ -20,5 +22,5 @@ const (
 )
 
 type MetricsType interface {
-	GenerateData(metricsChan chan string)
+	GenerateData(metricsChan chan common.Metrics)
 }
