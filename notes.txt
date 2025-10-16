@@ -1,7 +1,3 @@
-Export following env variables 
-    export ch_addr=localhost:8123
-    export ch_db=metrics
-
 Start the Click house server 
     Open Clickhouse directory (cd ~/clickhouse) in WSL 
     Start server using ./clickhouse server 
