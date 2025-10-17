@@ -28,8 +28,8 @@ CREATE TABLE cpu (
     last_spike_time DateTime,
     next_read_time DateTime,
     updated_at DateTime DEFAULT now(),
-) ENGINE = MergeTree();
-PARTITION BY toYYYYMM(updated_at)
+) ENGINE = MergeTree()
+PARTITION BY updated_at
 ORDER BY (device_id, updated_at);
 
 CREATE DICTIONARY cpu_metadatadict (
@@ -43,7 +43,7 @@ CREATE DICTIONARY cpu_metadatadict (
 PRIMARY KEY device_id
 source (CLICKHOUSE(table 'cpu_metadata'))
 lifetime(0) -- no updates required as metadata will always be static
-layout(FLAT()); 
+layout(HASHED()); 
 
 --------------------------------------- Incremental MV 1 ---------------------------------------
 
@@ -90,50 +90,18 @@ GROUP BY model;
 --------------------------------------- Incremental MV 2 ---------------------------------------
 
 
-
 --------------------------------------- Refresh MV 1 ---------------------------------------
-
-CREATE TABLE cpu_hourly_summary (
-    loc String,
-    hour DateTime,
-    avgCurrentUsage AggregateFunction(avg, Float64),
-    maxSpikeMagnitude AggregateFunction(max, Float64),
-    avgCPUTemperature AggregateFunction(avg, Float64),
-    countRecords AggregateFunction(count, UInt64)
-)
-ENGINE = AggregatingMergeTree()
-PARTITION BY toYYYYMMDD(hour)
-ORDER BY (loc, hour);
-
-CREATE MATERIALIZED VIEW cpu_hourly_refresh_mv
-REFRESH EVERY 1 HOUR
-TO cpu_hourly_summary AS
-SELECT
-    dictGetString('cpu_metadatadict', 'loc', device_id) AS loc,
-    toStartOfHour(updated_at) AS hour,
-    avgState(current_usage) AS avgCurrentUsage,
-    maxState(spike_magnitude) AS maxSpikeMagnitude,
-    avgState(cpu_temperature) AS avgCPUTemperature,
-    countState() AS countRecords
-FROM cpu
-GROUP BY loc, hour;
-
---------------------------------------- Refresh MV 1 ---------------------------------------
-
-
-
---------------------------------------- Refresh MV 2 ---------------------------------------
 
 CREATE TABLE cpu_daily_summary (
     loc String,
-    day Date,
+    day String,
     avgCurrentUsage AggregateFunction(avg, Float64),
     maxSpikeMagnitude AggregateFunction(max, Float64),
     avgCPUTemperature AggregateFunction(avg, Float64),
     countRecords AggregateFunction(count, UInt64)
 )
 ENGINE = AggregatingMergeTree()
-PARTITION BY toYYYYMM(day)
+PARTITION BY day
 ORDER BY (loc, day);
 
 CREATE MATERIALIZED VIEW cpu_daily_refresh_mv
@@ -141,7 +109,7 @@ REFRESH EVERY 24 HOUR
 TO cpu_daily_summary AS
 SELECT
     dictGetString('cpu_metadatadict', 'loc', device_id) AS loc,
-    toDate(updated_at) AS day,
+    formatDateTime(updated_at, '%Y%m%d') AS day,
     avgState(current_usage) AS avgCurrentUsage,
     maxState(spike_magnitude) AS maxSpikeMagnitude,
     avgState(cpu_temperature) AS avgCPUTemperature,
@@ -149,4 +117,33 @@ SELECT
 FROM cpu
 GROUP BY loc, day;
 
---------------------------------------- Refresh MV 2 ---------------------------------------
+--------------------------------------- Refresh MV 1 ---------------------------------------
+
+
+--------------------------------------- Test Refresh MV 2 ---------------------------------------
+
+CREATE TABLE cpu_minute_summary (
+    loc String,
+    minute String,
+    avgCurrentUsage AggregateFunction(avg, Float64),
+    maxSpikeMagnitude AggregateFunction(max, Float64),
+    avgCPUTemperature AggregateFunction(avg, Float64),
+    countRecords AggregateFunction(count, UInt64)
+) ENGINE = AggregatingMergeTree() 
+PARTITION BY minute
+ORDER BY (loc, minute);
+
+CREATE MATERIALIZED VIEW cpu_minute_refresh_mv
+REFRESH EVERY 1 MINUTE 
+TO cpu_minute_summary AS
+SELECT
+    dictGetString('cpu_metadatadict', 'loc', device_id) AS loc,
+    formatDateTime(updated_at, '%Y%m%d%H%i') AS minute,
+    avgState(current_usage) AS avgCurrentUsage,
+    maxState(spike_magnitude) AS maxSpikeMagnitude,
+    avgState(cpu_temperature) AS avgCPUTemperature,
+    countState() AS countRecords
+FROM cpu
+GROUP BY loc, minute;
+
+--------------------------------------- Test Refresh MV 2 --------------------------------------- 
