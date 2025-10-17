@@ -14,3 +14,20 @@ INSERT INTO cpu_metadata (device_id, hostname, loc, model, core_count, frequency
 ('CPU-fb8a6d27', 'iota-engine-01', 'Mumbai', 'AMD Ryzen 7 5800X3D', 6, 2.2),
 ('CPU-9a3e2b74', 'kappa-node-01', 'Chennai', 'Intel Xeon E5-2690 v4', 8, 3.2),
 ('CPU-1f6d4e58', 'lambda-cpu-01', 'Chennai', 'AMD Ryzen Threadripper PRO 5995WX', 16, 3.9);
+
+
+select * from cpu;  
+select spike_magnitude, updated_at from cpu where dictGetString('cpu_metadatadict', 'loc', device_id) = 'Mumbai' order by updated_at;
+  
+select loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), sumMerge(totalCPUTemperature)
+from CPU_PER_LOCATION group by loc; 
+
+select model, uniqMerge(uniqFrequency), countMerge(countNoiseLevel) from CPU_PER_MODEL group by model; 
+
+select loc, day, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), avgMerge(avgCPUTemperature), countMerge(countRecords)
+from cpu_daily_summary group by (loc, day); 
+
+select loc, minute, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), avgMerge(avgCPUTemperature), countMerge(countRecords)
+from cpu_minute_summary group by (loc, minute);  
+
+select * from system.view_refreshes where database = 'metrics'; 
