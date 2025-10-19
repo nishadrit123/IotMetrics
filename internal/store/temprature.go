@@ -16,7 +16,7 @@ type TemperatureStore struct {
 func (s *TemperatureStore) InsertBatch(data []common.Metrics) error {
 	batch, err := (*s.ch).PrepareBatch(context.Background(), "INSERT INTO temperature (id, device_name, device_id, baseline_temperature, spike_probability, spike_magnitude, noise_level, updated_interval, drift_rate, current_temperature, is_spiking, last_spike_time, next_read_time, trend)")
 	if err != nil {
-		log.Printf("Error preparing batch: %v", err)
+		log.Printf("Error preparing Temperature batch: %v", err)
 		return err
 	}
 	for _, i := range data {
@@ -38,7 +38,7 @@ func (s *TemperatureStore) InsertBatch(data []common.Metrics) error {
 			i.NextRead,
 			i.Trend,
 		); err != nil {
-			log.Printf("Error appending to batch: %v", err)
+			log.Printf("Error appending to Temperature batch: %v", err)
 			return err
 		}
 	}

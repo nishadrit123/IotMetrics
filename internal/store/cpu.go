@@ -16,7 +16,7 @@ type CPUStore struct {
 func (s *CPUStore) InsertBatch(data []common.Metrics) error {
 	batch, err := (*s.ch).PrepareBatch(context.Background(), "INSERT INTO cpu (id, device_name, device_id, baseline_usage, spike_probability, spike_magnitude, noise_level, updated_interval, current_usage, cpu_temperature, is_spiking, last_spike_time, next_read_time)")
 	if err != nil {
-		log.Printf("Error preparing batch: %v", err)
+		log.Printf("Error preparing CPU batch: %v", err)
 		return err
 	}
 	for _, i := range data {
@@ -37,7 +37,7 @@ func (s *CPUStore) InsertBatch(data []common.Metrics) error {
 			i.LastSpikeTime,
 			i.NextRead,
 		); err != nil {
-			log.Printf("Error appending to batch: %v", err)
+			log.Printf("Error appending to CPU batch: %v", err)
 			return err
 		}
 	}
