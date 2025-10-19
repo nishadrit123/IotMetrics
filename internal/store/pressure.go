@@ -14,7 +14,7 @@ type PressureStore struct {
 }
 
 func (s *PressureStore) InsertBatch(data []common.Metrics) error {
-	batch, err := (*s.ch).PrepareBatch(context.Background(), "INSERT INTO pressuer (id, device_name, device_id, baseline_pressure, spike_probability, spike_magnitude, noise_level, updated_interval, drift_rate, current_pressure, is_spiking, last_spike_time, next_read_time, trend)")
+	batch, err := (*s.ch).PrepareBatch(context.Background(), "INSERT INTO pressure (id, device_name, device_id, baseline_pressure, spike_probability, spike_magnitude, noise_level, updated_interval, drift_rate, current_pressure, is_spiking, last_spike_time, next_read_time, trend)")
 	if err != nil {
 		log.Printf("Error preparing Pressure batch: %v", err)
 		return err
