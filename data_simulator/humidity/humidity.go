@@ -22,7 +22,6 @@ func (h *Humidity) GenerateData(humidity_chan chan common.Metrics) {
 	h.Model = Models[staticNum]
 	h.Manufacturer = Manufacturers[staticNum]
 	h.InstallDate = InstallDates[staticNum]
-	h.Unit = Units[staticNum]
 
 	h.BaselineHumidity = BaselineHumidity[rand.Intn(len(BaselineHumidity))]
 	h.SpikeProbability = SpikeProbabilities[rand.Intn(len(SpikeProbabilities))]

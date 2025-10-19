@@ -22,7 +22,6 @@ func (p *Pressure) GenerateData(pressure_chan chan common.Metrics) {
 	p.Model = Models[staticNum]
 	p.Manufacturer = Manufacturers[staticNum]
 	p.InstallDate = InstallDates[staticNum]
-	p.Unit = Units[staticNum]
 
 	p.BaselinePressure = BaselinePressure[rand.Intn(len(BaselinePressure))]
 	p.SpikeProbability = SpikeProbabilities[rand.Intn(len(SpikeProbabilities))]

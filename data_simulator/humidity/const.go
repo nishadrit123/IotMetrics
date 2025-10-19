@@ -50,12 +50,6 @@ var InstallDates = []time.Time{
 	time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC),
 }
 
-var Units = []string{
-	"%RH", "%RH", "%RH", "%RH", "%RH",
-	"%RH", "%RH", "%RH", "%RH", "%RH",
-	"%RH", "%RH", "%RH", "%RH", "%RH",
-}
-
 var BaselineHumidity = []float64{
 	45.0, 55.0, 60.0, 50.0, 40.0,
 	35.0, 38.0, 70.0, 80.0, 75.0,

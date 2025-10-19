@@ -14,47 +14,6 @@ var DeviceIds = []string{
 	"TEMP-9234K", "TEMP-8721L", "TEMP-7563M", "TEMP-6312N", "TEMP-5024O",
 }
 
-var Locations = []string{
-	"Mumbai/Lab-1", "Delhi/Server-Room", "Bangalore/Factory-2", "Hyderabad/Office-1", "Chennai/Data-Center",
-	"Pune/Lab-3", "Ahmedabad/Warehouse", "Singapore/R&D", "Frankfurt/Plant-1", "London/HQ",
-	"New York/Lab-A", "San Francisco/Lab-B", "Tokyo/Plant-4", "Sydney/Server-Room", "Toronto/Lab-2",
-}
-
-var Models = []string{
-	"TX-90", "TX-85", "HTR-100", "NanoTemp-X1", "AeroSense-5",
-	"ThermoPro-7", "TempEdge-300", "MicroHeat-2", "SenseX-T100", "EnviroMax-9",
-	"ThermIQ-10", "TempMate-400", "HeatScan-8", "CoolSense-500", "EcoTherm-6",
-}
-
-var Manufacturers = []string{
-	"ThermoTech", "EnviroSense", "HeatMaster", "AeroDynamics", "CoolSys",
-	"NanoInstruments", "TempEdge Corp", "Sensorify", "HeatLabs", "ThermaVision",
-	"EnviroCore", "MicroHeat", "SenseLogic", "DataTherm", "AeroSense Ltd",
-}
-
-var InstallDates = []time.Time{
-	time.Date(2021, 6, 10, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 11, 25, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 1, 8, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 3, 15, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 9, 4, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 7, 19, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 5, 30, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 12, 12, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 2, 20, 0, 0, 0, 0, time.UTC),
-	time.Date(2024, 4, 2, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 8, 17, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 10, 6, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 2, 14, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 6, 21, 0, 0, 0, 0, time.UTC),
-	time.Date(2024, 1, 11, 0, 0, 0, 0, time.UTC),
-}
-
-var Units = []string{
-	"°C", "°C", "°C", "°C", "°C", "°C", "°C", "°C", "°C", "°C",
-	"°C", "°C", "°C", "°C", "°C",
-}
-
 var BaselineTemps = []float64{
 	24.5, 27.0, 22.3, 25.1, 29.4, 26.5, 23.8, 30.2, 21.9, 28.0,
 	24.7, 25.5, 26.8, 27.9, 23.5,

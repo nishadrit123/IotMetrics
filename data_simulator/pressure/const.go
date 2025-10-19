@@ -50,12 +50,6 @@ var InstallDates = []time.Time{
 	time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC),
 }
 
-var Units = []string{
-	"Pa", "Pa", "Pa", "Pa", "Pa",
-	"Pa", "Pa", "Pa", "Pa", "Pa",
-	"Pa", "Pa", "Pa", "Pa", "Pa",
-}
-
 var BaselinePressure = []float64{
 	101325, 100800, 102000, 101500, 100900,
 	101200, 101000, 102200, 101800, 100700,

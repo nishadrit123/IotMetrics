@@ -17,7 +17,6 @@ type Metrics struct {
 	Frequency    float64   `json:"frequency_ghz,omitempty"`
 	Manufacturer string    `json:"manufacturer,omitempty"`
 	InstallDate  time.Time `json:"install_date,omitempty"`
-	Unit         string    `json:"unit,omitempty"`
 
 	BaselineUsage    float64       `json:"baseline_usage,omitempty"`
 	BaselineHumidity float64       `json:"baseline_humidity,omitempty"`

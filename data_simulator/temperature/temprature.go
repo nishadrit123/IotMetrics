@@ -20,11 +20,6 @@ func (t *Temperature) GenerateData(temprature_chan chan common.Metrics) {
 	t.Id = uuid.New().String()
 	t.DeviceId = DeviceIds[staticnum]
 	t.DeviceName = DeviceName
-	t.Location = Locations[staticnum]
-	t.Model = Models[staticnum]
-	t.Manufacturer = Manufacturers[staticnum]
-	t.InstallDate = InstallDates[staticnum]
-	t.Unit = Units[staticnum]
 
 	// static per run
 	t.BaselineTemp = BaselineTemps[rand.Intn(len(BaselineTemps))]
