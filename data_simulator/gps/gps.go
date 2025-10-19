@@ -19,10 +19,6 @@ func (g *GPS) GenerateData(gps_chan chan common.Metrics) {
 	g.Id = uuid.New().String()
 	g.DeviceId = DeviceIds[staticNum]
 	g.DeviceName = DeviceName
-	g.Location = Locations[staticNum]
-	g.Model = Models[staticNum]
-	g.Manufacturer = Manufacturers[staticNum]
-	g.InstallDate = InstallDates[staticNum]
 
 	// static per run
 	g.UpdateInterval = time.Duration(rand.Intn(GPSUpdateInterval))
