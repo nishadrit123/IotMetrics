@@ -136,36 +136,6 @@ GROUP BY loc, day;
 
 --------------------------------------- Refresh MV 1 ---------------------------------------
 
-
---------------------------------------- Test Refresh MV 2 ---------------------------------------
-
-CREATE TABLE cpu_minute_summary (
-    loc String,
-    minute String,
-    avgCurrentUsage AggregateFunction(avg, Float64),
-    maxSpikeMagnitude AggregateFunction(max, Float64),
-    avgCPUTemperature AggregateFunction(avg, Float64),
-    countRecords AggregateFunction(count, UInt64)
-) ENGINE = AggregatingMergeTree() 
-PARTITION BY minute
-ORDER BY (loc, minute);
-
-CREATE MATERIALIZED VIEW cpu_minute_refresh_mv
-REFRESH EVERY 1 MINUTE 
-TO cpu_minute_summary AS
-SELECT
-    dictGetString('cpu_metadatadict', 'loc', device_id) AS loc,
-    formatDateTime(updated_at, '%Y%m%d%H%i') AS minute,
-    avgState(current_usage) AS avgCurrentUsage,
-    maxState(spike_magnitude) AS maxSpikeMagnitude,
-    avgState(cpu_temperature) AS avgCPUTemperature,
-    countState() AS countRecords
-FROM cpu
-GROUP BY loc, minute;
-
---------------------------------------- Test Refresh MV 2 --------------------------------------- 
-
-
 -- CREATE DATABASE metrics;
 -- USE metrics;
 -- DROP DATABASE metrics
@@ -714,3 +684,38 @@ FROM temperature
 GROUP BY loc, day;
 
 --------------------------------------- Refresh MV 1 ---------------------------------------
+
+
+select loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), sumMerge(totalCPUTemperature)
+from CPU_PER_LOCATION group by loc; 
+
+select model, maxMerge(maxHeading), countMerge(countManufacturer)
+from GPS_PER_MODEL group by model; 
+
+select loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentHumidity), minMerge(minDriftRate)
+from HUMIDITY_PER_LOCATION group by loc; 
+
+select loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentPressure), minMerge(minDriftRate)
+from PRESSURE_PER_LOCATION group by loc; 
+
+select loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentTemperature), minMerge(minDriftRate)
+from TEMPERATURE_PER_LOCATION group by loc;
+
+
+select loc, day, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), avgMerge(avgCPUTemperature), countMerge(countRecords)
+from cpu_daily_summary group by (loc, day); 
+
+select model, day, avgMerge(avgSpeed), maxMerge(maxAltitude), sumMerge(sumDriftRate), countMerge(countRecords)
+from gps_daily_summary group by (model, day); 
+
+select loc, day, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentHumidity), sumMerge(sumBaselineHumidity), countMerge(countRecords)
+from humidity_daily_summary group by (loc, day); 
+
+select loc, day, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentPressure), sumMerge(sumBaselinePressure), countMerge(countRecords)
+from pressure_daily_summary group by (loc, day); 
+
+select loc, day, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentTemperature), sumMerge(sumBaselineTemperature), countMerge(countRecords)
+from temperature_daily_summary group by (loc, day); 
+
+
+select * from system.view_refreshes where database = 'metrics' 

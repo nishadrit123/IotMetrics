@@ -14,7 +14,7 @@ type HumidityStore struct {
 }
 
 func (s *HumidityStore) InsertBatch(data []common.Metrics) error {
-	batch, err := (*s.ch).PrepareBatch(context.Background(), "INSERT INTO temperature (id, device_name, device_id, baseline_humidity, spike_probability, spike_magnitude, noise_level, updated_interval, drift_rate, current_humidity, is_spiking, last_spike_time, next_read_time, trend)")
+	batch, err := (*s.ch).PrepareBatch(context.Background(), "INSERT INTO humidity (id, device_name, device_id, baseline_humidity, spike_probability, spike_magnitude, noise_level, updated_interval, drift_rate, current_humidity, is_spiking, last_spike_time, next_read_time, trend)")
 	if err != nil {
 		log.Printf("Error preparing Humidity batch: %v", err)
 		return err
