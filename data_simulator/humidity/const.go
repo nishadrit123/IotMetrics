@@ -1,7 +1,5 @@
 package humidity
 
-import "time"
-
 const (
 	SpikeThreshold         = 10.0
 	DeviceName             = "humidity"
@@ -12,42 +10,6 @@ var DeviceIds = []string{
 	"HUM-9001A", "HUM-8423B", "HUM-7310C", "HUM-6598D", "HUM-5246E",
 	"HUM-4875F", "HUM-3762G", "HUM-2691H", "HUM-1539I", "HUM-0452J",
 	"HUM-9238K", "HUM-8725L", "HUM-7603M", "HUM-6421N", "HUM-5087O",
-}
-
-var Locations = []string{
-	"Warehouse-Zone-A", "Warehouse-Zone-B", "Factory-Assembly-1", "Factory-Assembly-2", "Office-Floor-3",
-	"Server-Room-1", "Server-Room-2", "Cold-Storage-Unit", "Greenhouse-1", "Greenhouse-2",
-	"Basement-Lab", "Quality-Control-Room", "R&D-Lab-1", "Testing-Facility-2", "Warehouse-Zone-C",
-}
-
-var Models = []string{
-	"HX-200", "HX-210", "HumidPro-5", "DrySense-X1", "MoistTrack-300",
-	"EnviroHum-10", "AeroHumid-8", "NanoHumidity-2", "HygroSmart-500", "AtmosTrack-9",
-	"HydroScan-7", "AirSense-H2", "EnviroWave-4", "HumidityEdge-12", "ClimaCheck-8",
-}
-
-var Manufacturers = []string{
-	"EnviroTech", "AeroDynamics", "ThermoLogic", "NanoInstruments", "CoolSys",
-	"Sensorify", "HumidLabs", "AtmosCorp", "MoistureMax", "DataTherm",
-	"EnviroCore", "MicroSense", "AirSmart", "ClimaEdge", "HydroSystems",
-}
-
-var InstallDates = []time.Time{
-	time.Date(2021, 3, 10, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 8, 22, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 2, 5, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 4, 19, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 11, 7, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 6, 15, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 9, 28, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 12, 1, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 1, 18, 0, 0, 0, 0, time.UTC),
-	time.Date(2024, 3, 9, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 7, 22, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 10, 16, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 5, 2, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 5, 27, 0, 0, 0, 0, time.UTC),
-	time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC),
 }
 
 var BaselineHumidity = []float64{
