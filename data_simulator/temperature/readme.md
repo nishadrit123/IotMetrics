@@ -9,7 +9,6 @@ These describe the simulated device itself — they never change once initialize
 | `Model`        | `string`    | Sensor model (e.g., “TX-90”)                        |
 | `Manufacturer` | `string`    | Device manufacturer name                            |
 | `InstallDate`  | `time.Time` | When the sensor was installed                       |
-| `Unit`         | `string`    | Temperature unit — “°C” or “°F”                     |
 
 
 Configuration / Behavior Parameters (static per run)

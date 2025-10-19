@@ -9,7 +9,6 @@ These describe the simulated device itself — they never change once initialize
 | `Model`        | `string`    | Sensor model (e.g., “PX-500”)                     |
 | `Manufacturer` | `string`    | Device manufacturer name                          |
 | `InstallDate`  | `time.Time` | Date when the sensor was installed                |
-| `Unit`         | `string`    | Measurement unit — e.g., “Pa” or “psi”            |
 
 
 Configuration / Behavior Parameters (static per run)
