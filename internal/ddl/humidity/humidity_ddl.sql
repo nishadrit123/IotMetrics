@@ -72,7 +72,7 @@ GROUP BY loc;
 
 CREATE TABLE HUMIDITY_PER_MODEL (
     model String, 
-    uniqTrend AggregateFunction(uniq, Float64),
+    uniqTrend AggregateFunction(uniq, String),
     countManufacturer AggregateFunction(count, Float64)
 ) ENGINE = AggregatingMergeTree()
 ORDER BY model;
