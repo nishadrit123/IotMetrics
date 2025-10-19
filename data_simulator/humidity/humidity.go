@@ -18,10 +18,6 @@ func (h *Humidity) GenerateData(humidity_chan chan common.Metrics) {
 	h.Id = uuid.New().String()
 	h.DeviceId = DeviceIds[staticNum]
 	h.DeviceName = DeviceName
-	h.Location = Locations[staticNum]
-	h.Model = Models[staticNum]
-	h.Manufacturer = Manufacturers[staticNum]
-	h.InstallDate = InstallDates[staticNum]
 
 	h.BaselineHumidity = BaselineHumidity[rand.Intn(len(BaselineHumidity))]
 	h.SpikeProbability = SpikeProbabilities[rand.Intn(len(SpikeProbabilities))]
