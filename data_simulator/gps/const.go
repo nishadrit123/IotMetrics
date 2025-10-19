@@ -1,7 +1,5 @@
 package gps
 
-import "time"
-
 const (
 	DeviceName        = "gps"
 	GPSUpdateInterval = 3
@@ -11,42 +9,6 @@ var DeviceIds = []string{
 	"GPS-1001A", "GPS-1002B", "GPS-1003C", "GPS-1004D", "GPS-1005E",
 	"GPS-1006F", "GPS-1007G", "GPS-1008H", "GPS-1009I", "GPS-1010J",
 	"GPS-1011K", "GPS-1012L", "GPS-1013M", "GPS-1014N", "GPS-1015O",
-}
-
-var Locations = []string{
-	"Vehicle A", "Vehicle B", "Truck 1", "Truck 2", "Drone 1",
-	"Drone 2", "Boat 1", "Boat 2", "Lab Test Unit 1", "Lab Test Unit 2",
-	"Warehouse Vehicle 1", "Warehouse Vehicle 2", "Field Unit 1", "Field Unit 2", "Delivery Van 1",
-}
-
-var Models = []string{
-	"GNSS-XYZ", "GNSS-ABC", "GPSPro-100", "GeoTrack-200", "NavSat-50",
-	"SpeedTrack-300", "AeroNav-1", "HydroNav-5", "SmartGPS-900", "NavEdge-10",
-	"MicroGPS-20", "UltraNav-15", "FieldTrack-33", "LabNav-77", "ProGPS-8",
-}
-
-var Manufacturers = []string{
-	"NavTech", "GeoDynamics", "AeroInstruments", "HydroSystems", "MicroNav",
-	"GPSify", "TrackLabs", "SatelliteCorp", "DataNav", "PrecisionGPS",
-	"EnviroNav", "SmartSat", "ClimaTrack", "GeoEdge", "NavSystems",
-}
-
-var InstallDates = []time.Time{
-	time.Date(2021, 1, 10, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 5, 22, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 2, 5, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 3, 18, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 8, 7, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 6, 15, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 9, 28, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 12, 1, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 1, 12, 0, 0, 0, 0, time.UTC),
-	time.Date(2024, 4, 9, 0, 0, 0, 0, time.UTC),
-	time.Date(2022, 7, 22, 0, 0, 0, 0, time.UTC),
-	time.Date(2020, 10, 16, 0, 0, 0, 0, time.UTC),
-	time.Date(2021, 5, 2, 0, 0, 0, 0, time.UTC),
-	time.Date(2023, 5, 27, 0, 0, 0, 0, time.UTC),
-	time.Date(2024, 1, 5, 0, 0, 0, 0, time.UTC),
 }
 
 var SpeedNoiseLevels = []float64{

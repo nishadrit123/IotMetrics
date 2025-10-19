@@ -7,16 +7,12 @@ import "time"
 // CPU, Temperature, Humidity, Pressure and GPS
 
 type Metrics struct {
-	Id           string    `json:"id"`
-	DeviceId     string    `json:"device_id"`
-	DeviceName   string    `json:"device_name,omitempty"`
-	HostName     string    `json:"host_name,omitempty"`
-	Location     string    `json:"location,omitempty"`
-	Model        string    `json:"model,omitempty"`
-	CoreCount    int       `json:"core_count,omitempty"`
-	Frequency    float64   `json:"frequency_ghz,omitempty"`
-	Manufacturer string    `json:"manufacturer,omitempty"`
-	InstallDate  time.Time `json:"install_date,omitempty"`
+	Id         string  `json:"id"`
+	DeviceId   string  `json:"device_id"`
+	DeviceName string  `json:"device_name,omitempty"`
+	HostName   string  `json:"host_name,omitempty"`
+	CoreCount  int     `json:"core_count,omitempty"`
+	Frequency  float64 `json:"frequency_ghz,omitempty"`
 
 	BaselineUsage    float64       `json:"baseline_usage,omitempty"`
 	BaselineHumidity float64       `json:"baseline_humidity,omitempty"`

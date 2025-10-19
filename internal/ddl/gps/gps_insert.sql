@@ -1,33 +1,16 @@
-INSERT INTO cpu_metadata (device_id, hostname, loc, model, core_count, frequency) VALUES
-('CPU-9f3a1c72', 'alpha-core-01', 'Mumbai', 'Intel Xeon E5-2690 v4', 4, 2.4),
-('CPU-47b8d2ef', 'alpha-core-02', 'Pune', 'AMD Ryzen Threadripper PRO 5995WX', 6, 3.1),
-('CPU-a13f5e90', 'beta-node-01', 'Bangalore', 'Intel Xeon E5-2690 v4', 8, 2.9),
-('CPU-6b2c4d11', 'beta-node-02', 'Hyderabad', 'Intel Core i9-12900K', 12, 3.5),
-('CPU-f09a7b34', 'gamma-cpu-01', 'Bangalore', 'AMD Ryzen 9 7950X', 16, 3.8),
-('CPU-3e7c9a52', 'gamma-cpu-02', 'Pune', 'Intel Xeon Platinum 8280', 10, 2.6),
-('CPU-b4f1d689', 'delta-engine-01', 'Mumbai', 'AMD Ryzen 9 7950X', 8, 2.8),
-('CPU-28d6a9c3', 'delta-engine-02', 'Bangalore', 'Intel Xeon Platinum 8280', 6, 3.3),
-('CPU-c8e2f934', 'epsilon-core-01', 'Pune', 'Intel Core i9-12900K', 4, 3.0),
-('CPU-5a7b3d80', 'zeta-node-01', 'Bangalore', 'AMD Ryzen 7 5800X3D', 12, 2.5),
-('CPU-d49f8a15', 'eta-cpu-01', 'Mumbai', 'Intel Xeon E5-2690 v4', 8, 3.7),
-('CPU-7c2d1e63', 'theta-core-01', 'Hyderabad', 'Intel Xeon Platinum 8280', 14, 4.0),
-('CPU-fb8a6d27', 'iota-engine-01', 'Mumbai', 'AMD Ryzen 7 5800X3D', 6, 2.2),
-('CPU-9a3e2b74', 'kappa-node-01', 'Chennai', 'Intel Xeon E5-2690 v4', 8, 3.2),
-('CPU-1f6d4e58', 'lambda-cpu-01', 'Chennai', 'AMD Ryzen Threadripper PRO 5995WX', 16, 3.9);
-
-
-select * from cpu;  
-select spike_magnitude, updated_at from cpu where dictGetString('cpu_metadatadict', 'loc', device_id) = 'Mumbai' order by updated_at;
-  
-select loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), sumMerge(totalCPUTemperature)
-from CPU_PER_LOCATION group by loc; 
-
-select model, uniqMerge(uniqFrequency), countMerge(countNoiseLevel) from CPU_PER_MODEL group by model; 
-
-select loc, day, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), avgMerge(avgCPUTemperature), countMerge(countRecords)
-from cpu_daily_summary group by (loc, day); 
-
-select loc, minute, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), avgMerge(avgCPUTemperature), countMerge(countRecords)
-from cpu_minute_summary group by (loc, minute);  
-
-select * from system.view_refreshes where database = 'metrics'; 
+INSERT INTO gps_metadata (device_id, loc, model, manufacturer, install_date) VALUES
+('GPS-1001A', 'Vehicle A', 'ProGPS-8', 'NavTech', '2021-01-10'),
+('GPS-1002B', 'Vehicle B', 'SmartGPS-900', 'GeoDynamics', '2020-05-22'),
+('GPS-1003C', 'Truck 1', 'MicroGPS-20', 'AeroInstruments', '2022-02-05'),
+('GPS-1004D', 'Truck 2', 'SmartGPS-900', 'SatelliteCorp', '2023-03-18'),
+('GPS-1005E', 'Drone 1', 'MicroGPS-20', 'PrecisionGPS', '2021-08-07'),
+('GPS-1006F', 'Drone 2', 'AeroNav-1', 'AeroInstruments', '2022-06-15'),
+('GPS-1007G', 'Boat 1', 'AeroNav-1', 'GeoDynamics', '2020-09-28'),
+('GPS-1008H', 'Boat 2', 'MicroGPS-20', 'SatelliteCorp', '2021-12-01'),
+('GPS-1009I', 'Lab Test Unit 1', 'SmartGPS-900', 'GeoDynamics', '2023-01-12'),
+('GPS-1010J', 'Lab Test Unit 2', 'MicroGPS-20', 'PrecisionGPS', '2024-04-09'),
+('GPS-1011K', 'Warehouse Vehicle 1', 'MicroGPS-20', 'NavTech', '2022-07-22'),
+('GPS-1012L', 'Warehouse Vehicle 2', 'SmartGPS-900', 'GeoDynamics', '2020-10-16'),
+('GPS-1013M', 'Field Unit 1', 'ProGPS-8', 'AeroInstruments', '2021-05-02'),
+('GPS-1014N', 'Field Unit 2', 'MicroGPS-20', 'GeoDynamics', '2023-05-27'),
+('GPS-1015O', 'Delivery Van 1', 'ProGPS-8', 'NavTech', '2024-01-05');
