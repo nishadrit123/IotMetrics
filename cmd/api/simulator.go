@@ -28,11 +28,11 @@ func SimulateData(st store.Store) {
 
 	go func() {
 		for i := 0; i < NumDevices; i++ {
-			go SimulateCPUData(&cpu.CPU{}, cpu_chan)
-			go SimulateTemperatureData(&temperature.Temperature{}, temperature_chan)
-			go SimulateHumidityData(&humidity.Humidity{}, humidity_chan)
-			go SimulatePressureData(&pressure.Pressure{}, pressure_chan)
-			go SimulateGPSData(&gps.GPS{}, gps_chan)
+			// go SimulateCPUData(&cpu.CPU{}, cpu_chan)
+			// go SimulateTemperatureData(&temperature.Temperature{}, temperature_chan)
+			// go SimulateHumidityData(&humidity.Humidity{}, humidity_chan)
+			// go SimulatePressureData(&pressure.Pressure{}, pressure_chan)
+			// go SimulateGPSData(&gps.GPS{}, gps_chan)
 			time.Sleep(2 * time.Second) // Stagger the start times slightly
 		}
 	}()

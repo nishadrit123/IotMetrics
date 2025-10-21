@@ -4,6 +4,8 @@ import (
 	"context"
 	"iot/data_simulator/common"
 	"log"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -42,4 +44,60 @@ func (s *CPUStore) InsertBatch(data []common.Metrics) error {
 		}
 	}
 	return batch.Send()
+}
+
+func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
+	// Parse page number from query params, default to 1
+	page := 1
+	q := r.URL.Query()
+	if p := q.Get("page"); p != "" {
+		if n, err := strconv.Atoi(p); err == nil && n > 0 {
+			page = n
+		}
+	}
+
+	var totalRows uint64
+	err := (*s.ch).QueryRow(context.Background(), "SELECT count() FROM cpu").Scan(&totalRows)
+	if err != nil {
+		return nil, err
+	}
+	rowsPerPage := 10
+	totalPages := int((totalRows + uint64(rowsPerPage) - 1) / uint64(rowsPerPage))
+	offset := (page - 1) * rowsPerPage
+
+	rows, err := (*s.ch).Query(context.Background(),
+		`SELECT id, device_id, baseline_usage, spike_probability, spike_magnitude, noise_level, current_usage, cpu_temperature, is_spiking, last_spike_time FROM cpu ORDER BY device_id LIMIT ? OFFSET ?`,
+		rowsPerPage, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := []common.Metrics{}
+	for rows.Next() {
+		var s common.Metrics
+		err := rows.Scan(
+			&s.Id,
+			&s.DeviceId,
+			&s.BaselineUsage,
+			&s.SpikeProbability,
+			&s.SpikeMagnitude,
+			&s.NoiseLevel,
+			&s.CurrentUsage,
+			&s.Temperature,
+			&s.IsSpiking,
+			&s.LastSpikeTime,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	result := map[string]any{
+		"data":        stats,
+		"page":        page,
+		"total_pages": totalPages,
+		"total_rows":  totalRows,
+	}
+	return result, nil
 }

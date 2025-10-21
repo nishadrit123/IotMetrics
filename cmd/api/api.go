@@ -46,6 +46,13 @@ func (app *application) Mount() http.Handler {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
+	r.Route("/v1", func(r chi.Router) {
+
+		r.Route("/cpu", func(r chi.Router) {
+			r.Get("/statistics", app.getCPUStatistics)
+		})
+	})
+
 	return r
 }
 
