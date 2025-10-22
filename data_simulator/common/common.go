@@ -7,12 +7,16 @@ import "time"
 // CPU, Temperature, Humidity, Pressure and GPS
 
 type Metrics struct {
-	Id         string  `json:"id"`
-	DeviceId   string  `json:"device_id"`
-	DeviceName string  `json:"device_name,omitempty"`
-	HostName   string  `json:"host_name,omitempty"`
-	CoreCount  int     `json:"core_count,omitempty"`
-	Frequency  float64 `json:"frequency_ghz,omitempty"`
+	Id           string    `json:"id"`
+	DeviceId     string    `json:"device_id"`
+	Loc          string    `json:"loc,omitempty"`
+	Model        string    `json:"model,omitempty"`
+	DeviceName   string    `json:"device_name,omitempty"`
+	HostName     string    `json:"host_name,omitempty"`
+	CoreCount    int64     `json:"core_count,omitempty"`
+	Frequency    float64   `json:"frequency_ghz,omitempty"`
+	Manufacturer string    `json:"manufacturer,omitempty"`
+	InstallDate  time.Time `json:"install_date,omitempty"`
 
 	BaselineUsage    float64       `json:"baseline_usage,omitempty"`
 	BaselineHumidity float64       `json:"baseline_humidity,omitempty"`
@@ -39,4 +43,5 @@ type Metrics struct {
 	IsSpiking       bool      `json:"is_spiking,omitempty"`
 	LastSpikeTime   time.Time `json:"last_spike_time,omitempty"`
 	NextRead        time.Time `json:"next_read_time,omitempty"`
+	UpdatedAt       time.Time `json:"updated_at,omitempty"`
 }

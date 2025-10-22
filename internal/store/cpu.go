@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"iot/data_simulator/common"
 	"log"
 	"net/http"
@@ -49,11 +50,20 @@ func (s *CPUStore) InsertBatch(data []common.Metrics) error {
 func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
 	// Parse page number from query params, default to 1
 	page := 1
+	order := "device_id"
+	sort_way := "asc"
+
 	q := r.URL.Query()
 	if p := q.Get("page"); p != "" {
 		if n, err := strconv.Atoi(p); err == nil && n > 0 {
 			page = n
 		}
+	}
+	if o := q.Get("order"); o != "" {
+		order = o
+	}
+	if s := q.Get("sort"); s != "" {
+		sort_way = s
 	}
 
 	var totalRows uint64
@@ -65,9 +75,21 @@ func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
 	totalPages := int((totalRows + uint64(rowsPerPage) - 1) / uint64(rowsPerPage))
 	offset := (page - 1) * rowsPerPage
 
-	rows, err := (*s.ch).Query(context.Background(),
-		`SELECT id, device_id, baseline_usage, spike_probability, spike_magnitude, noise_level, current_usage, cpu_temperature, is_spiking, last_spike_time FROM cpu ORDER BY device_id LIMIT ? OFFSET ?`,
-		rowsPerPage, offset)
+	query := fmt.Sprintf(`
+	SELECT id, 
+		dictGetString(cpu_metadatadict, 'hostname', device_id) as hostname, 
+		dictGetString(cpu_metadatadict, 'loc', device_id) as loc, 
+		dictGetString(cpu_metadatadict, 'model', device_id) as model,
+		dictGetInt64(cpu_metadatadict, 'core_count', device_id) as core_count,
+		dictGetFloat64(cpu_metadatadict, 'frequency', device_id) as frequency,
+		device_id, baseline_usage, spike_probability, spike_magnitude, 
+	    noise_level, current_usage, cpu_temperature, is_spiking, 
+		last_spike_time, next_read_time, updated_at
+	FROM cpu 
+	ORDER BY %s %s 
+	LIMIT ? OFFSET ?`, order, sort_way)
+
+	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +99,11 @@ func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Id,
+			&s.HostName,
+			&s.Loc,
+			&s.Model,
+			&s.CoreCount,
+			&s.Frequency,
 			&s.DeviceId,
 			&s.BaselineUsage,
 			&s.SpikeProbability,
@@ -86,6 +113,8 @@ func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
 			&s.Temperature,
 			&s.IsSpiking,
 			&s.LastSpikeTime,
+			&s.NextRead,
+			&s.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
