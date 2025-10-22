@@ -51,6 +51,9 @@ func (app *application) Mount() http.Handler {
 		r.Route("/cpu", func(r chi.Router) {
 			r.Get("/statistics", app.getCPUStatistics)
 		})
+		r.Route("/humidity", func(r chi.Router) {
+			r.Get("/statistics", app.getHumidityStatistics)
+		})
 	})
 
 	return r
