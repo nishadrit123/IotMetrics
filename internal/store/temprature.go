@@ -6,7 +6,6 @@ import (
 	"iot/data_simulator/common"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -49,32 +48,10 @@ func (s *TemperatureStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *TemperatureStore) GetStatistics(r *http.Request) (any, error) {
-	// Parse page number from query params, default to 1
-	page := 1
-	order := "device_id"
-	sort_way := "asc"
-
-	q := r.URL.Query()
-	if p := q.Get("page"); p != "" {
-		if n, err := strconv.Atoi(p); err == nil && n > 0 {
-			page = n
-		}
-	}
-	if o := q.Get("order"); o != "" {
-		order = o
-	}
-	if s := q.Get("sort"); s != "" {
-		sort_way = s
-	}
-
-	var totalRows uint64
-	err := (*s.ch).QueryRow(context.Background(), "SELECT count() FROM temperature").Scan(&totalRows)
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, _, err := Paginate(r, *s.ch, "temperature")
 	if err != nil {
 		return nil, err
 	}
-	rowsPerPage := 10
-	totalPages := int((totalRows + uint64(rowsPerPage) - 1) / uint64(rowsPerPage))
-	offset := (page - 1) * rowsPerPage
 
 	query := fmt.Sprintf(`
 	SELECT id,

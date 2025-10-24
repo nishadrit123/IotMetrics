@@ -6,7 +6,6 @@ import (
 	"iot/data_simulator/common"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -48,32 +47,10 @@ func (s *CPUStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
-	// Parse page number from query params, default to 1
-	page := 1
-	order := "device_id"
-	sort_way := "asc"
-
-	q := r.URL.Query()
-	if p := q.Get("page"); p != "" {
-		if n, err := strconv.Atoi(p); err == nil && n > 0 {
-			page = n
-		}
-	}
-	if o := q.Get("order"); o != "" {
-		order = o
-	}
-	if s := q.Get("sort"); s != "" {
-		sort_way = s
-	}
-
-	var totalRows uint64
-	err := (*s.ch).QueryRow(context.Background(), "SELECT count() FROM cpu").Scan(&totalRows)
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "cpu")
 	if err != nil {
 		return nil, err
 	}
-	rowsPerPage := 10
-	totalPages := int((totalRows + uint64(rowsPerPage) - 1) / uint64(rowsPerPage))
-	offset := (page - 1) * rowsPerPage
 
 	query := fmt.Sprintf(`
 	SELECT id, 
@@ -85,9 +62,9 @@ func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
 		device_id, baseline_usage, spike_probability, spike_magnitude, 
 	    noise_level, current_usage, cpu_temperature, is_spiking, 
 		last_spike_time, next_read_time, updated_at
-	FROM cpu 
+	FROM cpu %s
 	ORDER BY %s %s 
-	LIMIT ? OFFSET ?`, order, sort_way)
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
 	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
 	if err != nil {
