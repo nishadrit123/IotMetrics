@@ -51,8 +51,17 @@ func (app *application) Mount() http.Handler {
 		r.Route("/cpu", func(r chi.Router) {
 			r.Get("/statistics", app.getCPUStatistics)
 		})
+		r.Route("/gps", func(r chi.Router) {
+			r.Get("/statistics", app.getGPSStatistics)
+		})
 		r.Route("/humidity", func(r chi.Router) {
 			r.Get("/statistics", app.getHumidityStatistics)
+		})
+		r.Route("/pressure", func(r chi.Router) {
+			r.Get("/statistics", app.getPressureStatistics)
+		})
+		r.Route("/temperature", func(r chi.Router) {
+			r.Get("/statistics", app.getTemperatureStatistics)
 		})
 	})
 
