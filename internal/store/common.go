@@ -10,21 +10,11 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
-type Filter struct {
-	Loc                string  `json:"loc,omitempty"`
-	Model              string  `json:"model,omitempty"`
-	SpikeMagnitude     float64 `json:"spike_magnitude,omitempty"`
-	CurrentUsage       float64 `json:"current_usage,omitempty"`
-	CurrentTemperature float64 `json:"current_temperature,omitempty"`
-	CurrentPressure    float64 `json:"current_pressure,omitempty"`
-	CurrentHumidity    float64 `json:"current_humidity,omitempty"`
-	Speed              float64 `json:"speed,omitempty"`
-	Heading            float64 `json:"heading,omitempty"`
-	Matches            bool    `json:"matches,omitempty"`
-	GreaterThan        bool    `json:"greater_than,omitempty"`
-}
-
 func Paginate(r *http.Request, ch clickhouse.Conn, tableName string) (string, string, int, int, int, int, int, string, error) {
+	var (
+		totalRows uint64
+		query     string
+	)
 	page := 1
 	order := "device_id"
 	sort_way := "asc"
@@ -46,8 +36,16 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName string) (string, st
 		filter = setFilter(f)
 	}
 
-	var totalRows uint64
-	err := ch.QueryRow(context.Background(), fmt.Sprintf("SELECT count() FROM %v", tableName)).Scan(&totalRows)
+	if filter == "" {
+		query = fmt.Sprintf("SELECT count() FROM %v", tableName)
+	} else {
+		locStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'loc', device_id)", tableName)
+		modelStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'model', device_id)", tableName)
+		filter = strings.Replace(filter, "loc", locStr, -1)
+		filter = strings.Replace(filter, "model", modelStr, -1)
+		query = fmt.Sprintf("SELECT count() FROM %v %v", tableName, filter)
+	}
+	err := ch.QueryRow(context.Background(), query).Scan(&totalRows)
 	if err != nil {
 		return order, sort_way, 0, 0, 0, 0, 0, filter, err
 	}
