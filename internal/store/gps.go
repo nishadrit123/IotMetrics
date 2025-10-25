@@ -46,7 +46,7 @@ func (s *GPSStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, _, err := Paginate(r, *s.ch, "gps")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps")
 	if err != nil {
 		return nil, err
 	}
@@ -59,9 +59,9 @@ func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
 		dictGetDate(gps_metadatadict, 'install_date', device_id) as install_date,
 		device_id, drift_rate, latitude, longitude, altitude, speed, heading, 
 		is_moving, next_read_time, updated_at 
-	FROM gps 
+	FROM gps %s
 	ORDER BY %s %s 
-	LIMIT ? OFFSET ?`, order, sort_way)
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
 	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
 	if err != nil {

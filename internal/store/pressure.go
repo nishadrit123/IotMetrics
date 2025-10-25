@@ -48,7 +48,7 @@ func (s *PressureStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *PressureStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, _, err := Paginate(r, *s.ch, "pressure")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "pressure")
 	if err != nil {
 		return nil, err
 	}
@@ -62,9 +62,9 @@ func (s *PressureStore) GetStatistics(r *http.Request) (any, error) {
 		device_id, baseline_pressure, spike_probability, spike_magnitude, 
 	    noise_level, drift_rate, current_pressure, is_spiking, 
 		last_spike_time, trend, next_read_time, updated_at 
-	FROM pressure 
+	FROM pressure %s
 	ORDER BY %s %s 
-	LIMIT ? OFFSET ?`, order, sort_way)
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
 	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
 	if err != nil {

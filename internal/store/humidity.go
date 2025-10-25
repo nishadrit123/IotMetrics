@@ -48,7 +48,7 @@ func (s *HumidityStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *HumidityStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, _, err := Paginate(r, *s.ch, "humidity")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "humidity")
 	if err != nil {
 		return nil, err
 	}
@@ -62,9 +62,9 @@ func (s *HumidityStore) GetStatistics(r *http.Request) (any, error) {
 		device_id, baseline_humidity, spike_probability, spike_magnitude, 
 	    noise_level, drift_rate, current_humidity, is_spiking, 
 		last_spike_time, trend, next_read_time, updated_at 
-	FROM humidity 
+	FROM humidity %s
 	ORDER BY %s %s 
-	LIMIT ? OFFSET ?`, order, sort_way)
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
 	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
 	if err != nil {
