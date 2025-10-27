@@ -47,7 +47,7 @@ func (s *CPUStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "cpu")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "cpu", "mergeTree")
 	if err != nil {
 		return nil, err
 	}
@@ -92,6 +92,131 @@ func (s *CPUStore) GetStatistics(r *http.Request) (any, error) {
 			&s.LastSpikeTime,
 			&s.NextRead,
 			&s.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	result := map[string]any{
+		"data":        stats,
+		"page":        page,
+		"total_pages": totalPages,
+		"total_rows":  totalRows,
+	}
+	return result, nil
+}
+
+func (s *CPUStore) GetAggregationPerLocation(r *http.Request) (any, error) {
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "CPU_PER_LOCATION", "incrementalLocMV")
+	if err != nil {
+		return nil, err
+	}
+
+	query := fmt.Sprintf(`
+	SELECT loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), sumMerge(totalCPUTemperature)
+	FROM CPU_PER_LOCATION %s group by loc
+	ORDER BY %s %s 
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
+
+	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := []common.Metrics{}
+	for rows.Next() {
+		var s common.Metrics
+		err := rows.Scan(
+			&s.Loc,
+			&s.SpikeMagnitude,
+			&s.CurrentUsage,
+			&s.Temperature,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	result := map[string]any{
+		"data":        stats,
+		"page":        page,
+		"total_pages": totalPages,
+		"total_rows":  totalRows,
+	}
+	return result, nil
+}
+
+func (s *CPUStore) GetAggregationPerModel(r *http.Request) (any, error) {
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "CPU_PER_MODEL", "incrementalModelMV")
+	if err != nil {
+		return nil, err
+	}
+
+	query := fmt.Sprintf(`
+	SELECT model, uniqMerge(uniqFrequency), countMerge(countNoiseLevel)
+	FROM CPU_PER_MODEL %s group by model
+	ORDER BY %s %s 
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
+
+	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := []common.Metrics{}
+	for rows.Next() {
+		var s common.Metrics
+		err := rows.Scan(
+			&s.Model,
+			&s.Count,
+			&s.CountNoise,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	result := map[string]any{
+		"data":        stats,
+		"page":        page,
+		"total_pages": totalPages,
+		"total_rows":  totalRows,
+	}
+	return result, nil
+}
+
+func (s *CPUStore) GetDailyAggregationPerLocation(r *http.Request) (any, error) {
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "cpu_daily_summary", "refreshLocMV")
+	if err != nil {
+		return nil, err
+	}
+
+	query := fmt.Sprintf(`
+	SELECT loc, day, avgMerge(avgCurrentUsage), maxMerge(maxSpikeMagnitude), 
+	avgMerge(avgCPUTemperature), countMerge(countRecords)
+	FROM cpu_daily_summary %s group by (loc, day)
+	ORDER BY %s %s 
+	LIMIT ? OFFSET ?`, filter, order, sort_way)
+
+	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := []common.Metrics{}
+	for rows.Next() {
+		var s common.Metrics
+		err := rows.Scan(
+			&s.Loc,
+			&s.Day,
+			&s.CurrentUsage,
+			&s.SpikeMagnitude,
+			&s.Temperature,
+			&s.Count,
 		)
 		if err != nil {
 			return nil, err

@@ -10,13 +10,22 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
-func Paginate(r *http.Request, ch clickhouse.Conn, tableName string) (string, string, int, int, int, int, int, string, error) {
+func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) (string, string, int, int, int, int, int, string, error) {
 	var (
 		totalRows uint64
 		query     string
+		order     string
 	)
+
+	if tableType == "mergeTree" {
+		order = "device_id"
+	} else if tableType == "incrementalLocMV" || tableType == "refreshLocMV" {
+		order = "loc"
+	} else if tableType == "incrementalModelMV" || tableType == "refreshModelMV" {
+		order = "model"
+	}
+
 	page := 1
-	order := "device_id"
 	sort_way := "asc"
 	filter := ""
 
@@ -39,10 +48,12 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName string) (string, st
 	if filter == "" {
 		query = fmt.Sprintf("SELECT count() FROM %v", tableName)
 	} else {
-		locStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'loc', device_id)", tableName)
-		modelStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'model', device_id)", tableName)
-		filter = strings.Replace(filter, "loc", locStr, -1)
-		filter = strings.Replace(filter, "model", modelStr, -1)
+		if tableType == "mergeTree" {
+			locStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'loc', device_id)", tableName)
+			modelStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'model', device_id)", tableName)
+			filter = strings.Replace(filter, "loc", locStr, -1)
+			filter = strings.Replace(filter, "model", modelStr, -1)
+		}
 		query = fmt.Sprintf("SELECT count() FROM %v %v", tableName, filter)
 	}
 	err := ch.QueryRow(context.Background(), query).Scan(&totalRows)

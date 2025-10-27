@@ -7,8 +7,8 @@ import "time"
 // CPU, Temperature, Humidity, Pressure and GPS
 
 type Metrics struct {
-	Id           string    `json:"id"`
-	DeviceId     string    `json:"device_id"`
+	Id           string    `json:"id,omitempty"`
+	DeviceId     string    `json:"device_id,omitempty"`
 	Loc          string    `json:"loc,omitempty"`
 	Model        string    `json:"model,omitempty"`
 	DeviceName   string    `json:"device_name,omitempty"`
@@ -17,6 +17,9 @@ type Metrics struct {
 	Frequency    float64   `json:"frequency_ghz,omitempty"`
 	Manufacturer string    `json:"manufacturer,omitempty"`
 	InstallDate  time.Time `json:"install_date,omitempty"`
+	Count        uint64    `json:"count,omitempty"`
+	CountNoise   uint64    `json:"count_noise,omitempty"`
+	Day          string    `json:"day,omitempty"`
 
 	BaselineUsage    float64       `json:"baseline_usage,omitempty"`
 	BaselineHumidity float64       `json:"baseline_humidity,omitempty"`
