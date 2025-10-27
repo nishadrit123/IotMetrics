@@ -116,7 +116,7 @@ func (s *CPUStore) GetAggregationPerLocation(r *http.Request) (any, error) {
 
 	query := fmt.Sprintf(`
 	SELECT loc, maxMerge(maxSpikeMagnitude), avgMerge(avgCurrentUsage), sumMerge(totalCPUTemperature)
-	FROM CPU_PER_LOCATION %s group by loc
+	FROM CPU_PER_LOCATION group by loc %s
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
@@ -157,7 +157,7 @@ func (s *CPUStore) GetAggregationPerModel(r *http.Request) (any, error) {
 
 	query := fmt.Sprintf(`
 	SELECT model, uniqMerge(uniqFrequency), countMerge(countNoiseLevel)
-	FROM CPU_PER_MODEL %s group by model
+	FROM CPU_PER_MODEL group by model %s
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
@@ -198,7 +198,7 @@ func (s *CPUStore) GetDailyAggregationPerLocation(r *http.Request) (any, error) 
 	query := fmt.Sprintf(`
 	SELECT loc, day, avgMerge(avgCurrentUsage), maxMerge(maxSpikeMagnitude), 
 	avgMerge(avgCPUTemperature), countMerge(countRecords)
-	FROM cpu_daily_summary %s group by (loc, day)
+	FROM cpu_daily_summary group by (loc, day) %s
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
