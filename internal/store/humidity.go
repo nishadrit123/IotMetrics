@@ -48,7 +48,7 @@ func (s *HumidityStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *HumidityStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "humidity")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "humidity", "mergeTree")
 	if err != nil {
 		return nil, err
 	}

@@ -48,7 +48,7 @@ func (s *PressureStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *PressureStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "pressure")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "pressure", "mergeTree")
 	if err != nil {
 		return nil, err
 	}

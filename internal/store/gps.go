@@ -46,7 +46,7 @@ func (s *GPSStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps", "mergeTree")
 	if err != nil {
 		return nil, err
 	}
