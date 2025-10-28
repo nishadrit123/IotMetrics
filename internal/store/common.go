@@ -59,12 +59,21 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 			filter = strings.Replace(filter, "model", modelStr, -1)
 			query = fmt.Sprintf("SELECT count() FROM %v %v", tableName, filter)
 		} else if strings.Contains(tableType, "MV") {
-			if strings.Contains(strings.ToLower(tableName), "loc") {
-				groupBy = "loc"
-			} else if strings.Contains(strings.ToLower(tableName), "model") {
-				groupBy = "model"
+			if strings.Contains(tableType, "incremental") {
+				if strings.Contains(strings.ToLower(tableName), "loc") {
+					groupBy = "loc"
+				} else if strings.Contains(strings.ToLower(tableName), "model") {
+					groupBy = "model"
+				}
+				query = fmt.Sprintf("SELECT count() FROM (SELECT %v FROM %v GROUP BY %v %v)", groupBy, tableName, groupBy, filter)
+			} else if strings.Contains(tableType, "refresh") {
+				if strings.Contains(strings.ToLower(tableName), "gps") {
+					groupBy = "model"
+				} else {
+					groupBy = "loc"
+				}
+				query = fmt.Sprintf("SELECT count() FROM (SELECT %v FROM %v GROUP BY (%v, day) %v)", groupBy, tableName, groupBy, filter)
 			}
-			query = fmt.Sprintf("SELECT count() FROM (SELECT %v FROM %v GROUP BY %v %v)", groupBy, tableName, groupBy, filter)
 		}
 	}
 
