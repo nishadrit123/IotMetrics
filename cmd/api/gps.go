@@ -44,8 +44,8 @@ func (app *application) getGPSAggregationPerModel(w http.ResponseWriter, r *http
 	}
 }
 
-func (app *application) getGPSDailyAggregationPerLocation(w http.ResponseWriter, r *http.Request) {
-	gpsDailyAggregation, err := app.store.GPS.(*st.GPSStore).GetDailyAggregationPerLocation(r)
+func (app *application) getGPSDailyAggregationPerModel(w http.ResponseWriter, r *http.Request) {
+	gpsDailyAggregation, err := app.store.GPS.(*st.GPSStore).GetDailyAggregationPerModel(r)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return

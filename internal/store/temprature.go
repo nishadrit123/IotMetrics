@@ -190,7 +190,7 @@ func (s *TemperatureStore) GetAggregationPerModel(r *http.Request) (any, error) 
 }
 
 func (s *TemperatureStore) GetDailyAggregationPerLocation(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "pressure_daily_summary", "refreshLocMV")
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "temperature_daily_summary", "refreshLocMV")
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func (s *TemperatureStore) GetDailyAggregationPerLocation(r *http.Request) (any,
 	query := fmt.Sprintf(`
 	SELECT loc, day, avgMerge(avgCurrentTemperature), maxMerge(maxSpikeMagnitude), 
 	sumMerge(sumBaselineTemperature), countMerge(countRecords)
-	FROM pressure_daily_summary group by (loc, day) %s
+	FROM temperature_daily_summary group by (loc, day) %s
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
