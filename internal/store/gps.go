@@ -184,8 +184,8 @@ func (s *GPSStore) GetAggregationPerModel(r *http.Request) (any, error) {
 	return result, nil
 }
 
-func (s *GPSStore) GetDailyAggregationPerLocation(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps_daily_summary", "refreshLocMV")
+func (s *GPSStore) GetDailyAggregationPerModel(r *http.Request) (any, error) {
+	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps_daily_summary", "refreshModelMV")
 	if err != nil {
 		return nil, err
 	}

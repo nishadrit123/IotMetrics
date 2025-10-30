@@ -50,7 +50,7 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 	}
 
 	if filter == "" {
-		query = fmt.Sprintf("SELECT count() FROM %v", tableName)
+		query = fmt.Sprintf("SELECT count() FROM %v FINAL", tableName)
 	} else {
 		if tableType == "mergeTree" {
 			locStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'loc', device_id)", tableName)
