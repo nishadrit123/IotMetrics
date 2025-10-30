@@ -7,19 +7,20 @@ import "time"
 // CPU, Temperature, Humidity, Pressure and GPS
 
 type Metrics struct {
-	Id           string    `json:"id,omitempty"`
-	DeviceId     string    `json:"device_id,omitempty"`
-	Loc          string    `json:"loc,omitempty"`
-	Model        string    `json:"model,omitempty"`
-	DeviceName   string    `json:"device_name,omitempty"`
-	HostName     string    `json:"host_name,omitempty"`
-	CoreCount    int64     `json:"core_count,omitempty"`
-	Frequency    float64   `json:"frequency_ghz,omitempty"`
-	Manufacturer string    `json:"manufacturer,omitempty"`
-	InstallDate  time.Time `json:"install_date,omitempty"`
-	Count        uint64    `json:"count,omitempty"`
-	CountNoise   uint64    `json:"count_noise,omitempty"`
-	Day          string    `json:"day,omitempty"`
+	Id                string    `json:"id,omitempty"`
+	DeviceId          string    `json:"device_id,omitempty"`
+	Loc               string    `json:"loc,omitempty"`
+	Model             string    `json:"model,omitempty"`
+	DeviceName        string    `json:"device_name,omitempty"`
+	HostName          string    `json:"host_name,omitempty"`
+	CoreCount         int64     `json:"core_count,omitempty"`
+	Frequency         float64   `json:"frequency_ghz,omitempty"`
+	Manufacturer      string    `json:"manufacturer,omitempty"`
+	CountManufacturer uint64    `json:"count_manufacturer,omitempty"`
+	InstallDate       time.Time `json:"install_date,omitempty"`
+	CountRecords      uint64    `json:"count_records,omitempty"`
+	CountNoise        uint64    `json:"count_noise,omitempty"`
+	Day               string    `json:"day,omitempty"`
 
 	BaselineUsage    float64       `json:"baseline_usage,omitempty"`
 	BaselineHumidity float64       `json:"baseline_humidity,omitempty"`
@@ -31,6 +32,7 @@ type Metrics struct {
 	UpdateInterval   time.Duration `json:"update_interval_seconds,omitempty"`
 	DriftRate        float64       `json:"drift_rate,omitempty"`
 	Trend            string        `json:"trend,omitempty"`
+	CountTrend       uint64        `json:"count_trend,omitempty"`
 	Latitude         float64       `json:"latitude,omitempty"`
 	Longitude        float64       `json:"longitude,omitempty"`
 	Altitude         float64       `json:"altitude_meters,omitempty"`

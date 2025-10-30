@@ -61,18 +61,46 @@ func (app *application) Mount() http.Handler {
 
 		r.Route("/gps", func(r chi.Router) {
 			r.Get("/statistics", app.getGPSStatistics)
+			r.Route("/aggregation", func(r chi.Router) {
+				r.Get("/location", app.getGPSAggregationPerLocation)
+				r.Get("/model", app.getGPSAggregationPerModel)
+			})
+			r.Route("/dailyaggregation", func(r chi.Router) {
+				r.Get("/location", app.getGPSDailyAggregationPerLocation)
+			})
 		})
 
 		r.Route("/humidity", func(r chi.Router) {
 			r.Get("/statistics", app.getHumidityStatistics)
+			r.Route("/aggregation", func(r chi.Router) {
+				r.Get("/location", app.getHumidityAggregationPerLocation)
+				r.Get("/model", app.getHumidityAggregationPerModel)
+			})
+			r.Route("/dailyaggregation", func(r chi.Router) {
+				r.Get("/location", app.getHumidityDailyAggregationPerLocation)
+			})
 		})
 
 		r.Route("/pressure", func(r chi.Router) {
 			r.Get("/statistics", app.getPressureStatistics)
+			r.Route("/aggregation", func(r chi.Router) {
+				r.Get("/location", app.getPressureAggregationPerLocation)
+				r.Get("/model", app.getPressureAggregationPerModel)
+			})
+			r.Route("/dailyaggregation", func(r chi.Router) {
+				r.Get("/location", app.getPressureDailyAggregationPerLocation)
+			})
 		})
 
 		r.Route("/temperature", func(r chi.Router) {
 			r.Get("/statistics", app.getTemperatureStatistics)
+			r.Route("/aggregation", func(r chi.Router) {
+				r.Get("/location", app.getTemperatureAggregationPerLocation)
+				r.Get("/model", app.getTemperatureAggregationPerModel)
+			})
+			r.Route("/dailyaggregation", func(r chi.Router) {
+				r.Get("/location", app.getTemperatureDailyAggregationPerLocation)
+			})
 		})
 	})
 
