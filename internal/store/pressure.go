@@ -48,7 +48,7 @@ func (s *PressureStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *PressureStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "pressure", "mergeTree")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "pressure", "mergeTree")
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (s *PressureStore) GetStatistics(r *http.Request) (any, error) {
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (s *PressureStore) GetStatistics(r *http.Request) (any, error) {
 }
 
 func (s *PressureStore) GetAggregationPerLocation(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "PRESSURE_PER_LOCATION", "incrementalLocMV")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "PRESSURE_PER_LOCATION", "incrementalLocMV")
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func (s *PressureStore) GetAggregationPerLocation(r *http.Request) (any, error) 
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func (s *PressureStore) GetAggregationPerLocation(r *http.Request) (any, error) 
 }
 
 func (s *PressureStore) GetAggregationPerModel(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "PRESSURE_PER_MODEL", "incrementalModelMV")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "PRESSURE_PER_MODEL", "incrementalModelMV")
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func (s *PressureStore) GetAggregationPerModel(r *http.Request) (any, error) {
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +190,7 @@ func (s *PressureStore) GetAggregationPerModel(r *http.Request) (any, error) {
 }
 
 func (s *PressureStore) GetDailyAggregationPerLocation(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "pressure_daily_summary", "refreshLocMV")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "pressure_daily_summary", "refreshLocMV")
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func (s *PressureStore) GetDailyAggregationPerLocation(r *http.Request) (any, er
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}

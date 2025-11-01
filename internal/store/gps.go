@@ -46,7 +46,7 @@ func (s *GPSStore) InsertBatch(data []common.Metrics) error {
 }
 
 func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps", "mergeTree")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "gps", "mergeTree")
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,10 @@ func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	log.Printf("***** %v *******\n", query)
+	log.Printf("***** %v *******\n", args)
+
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +107,7 @@ func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
 }
 
 func (s *GPSStore) GetAggregationPerLocation(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "GPS_PER_LOCATION", "incrementalLocMV")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "GPS_PER_LOCATION", "incrementalLocMV")
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +118,7 @@ func (s *GPSStore) GetAggregationPerLocation(r *http.Request) (any, error) {
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +148,7 @@ func (s *GPSStore) GetAggregationPerLocation(r *http.Request) (any, error) {
 }
 
 func (s *GPSStore) GetAggregationPerModel(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "GPS_PER_MODEL", "incrementalModelMV")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "GPS_PER_MODEL", "incrementalModelMV")
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +159,7 @@ func (s *GPSStore) GetAggregationPerModel(r *http.Request) (any, error) {
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +188,7 @@ func (s *GPSStore) GetAggregationPerModel(r *http.Request) (any, error) {
 }
 
 func (s *GPSStore) GetDailyAggregationPerModel(r *http.Request) (any, error) {
-	order, sort_way, totalPages, totalRows, offset, page, rowsPerPage, filter, err := Paginate(r, *s.ch, "gps_daily_summary", "refreshModelMV")
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "gps_daily_summary", "refreshModelMV")
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +200,7 @@ func (s *GPSStore) GetDailyAggregationPerModel(r *http.Request) (any, error) {
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
 
-	rows, err := (*s.ch).Query(context.Background(), query, rowsPerPage, offset)
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}

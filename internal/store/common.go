@@ -10,12 +10,15 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
-func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) (string, string, int, int, int, int, int, string, error) {
+func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) (string, string, int, int, int, string, []any, error) {
 	var (
 		totalRows uint64
 		query     string
 		order     string
 		groupBy   string
+		filter    string
+		final     string
+		args      []any
 	)
 
 	if tableType == "mergeTree" {
@@ -28,7 +31,6 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 
 	page := 1
 	sort_way := "asc"
-	filter := ""
 
 	q := r.URL.Query()
 	if p := q.Get("page"); p != "" {
@@ -46,11 +48,14 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 		sort_way = s
 	}
 	if f := q.Get("filter"); f != "" {
-		filter = setFilter(f, tableType)
+		filter, args = setFilter(f, tableType)
 	}
 
 	if filter == "" {
-		query = fmt.Sprintf("SELECT count() FROM %v FINAL", tableName)
+		if tableType != "mergeTree" {
+			final = "FINAL"
+		}
+		query = fmt.Sprintf("SELECT count() FROM %v %v", tableName, final)
 	} else {
 		if tableType == "mergeTree" {
 			locStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'loc', device_id)", tableName)
@@ -77,19 +82,30 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 		}
 	}
 
-	err := ch.QueryRow(context.Background(), query).Scan(&totalRows)
+	// Mitigation from SQL injection attack
+	err := ch.QueryRow(context.Background(), query, args...).Scan(&totalRows)
 	if err != nil {
-		return order, sort_way, 0, 0, 0, 0, 0, filter, err
+		return order, sort_way, 0, 0, 0, filter, args, err
 	}
+
 	rowsPerPage := 10
 	totalPages := int((totalRows + uint64(rowsPerPage) - 1) / uint64(rowsPerPage))
 	offset := (page - 1) * rowsPerPage
 
-	return order, sort_way, totalPages, int(totalRows), offset, page, rowsPerPage, filter, nil
+	args = append(args, rowsPerPage)
+	args = append(args, offset)
+
+	return order, sort_way, totalPages, int(totalRows), page, filter, args, nil
 }
 
-func setFilter(f, tableType string) string {
-	var filter string
+func setFilter(f, tableType string) (string, []any) {
+	var (
+		filter string
+		op     string
+		col    string
+		args   []any
+	)
+	placeHolder := "?"
 	filterSlice := strings.Split(f, ":")
 	for i, fs := range filterSlice {
 		if i == 0 {
@@ -101,42 +117,47 @@ func setFilter(f, tableType string) string {
 		} else {
 			filter += " AND "
 		}
+
 		if strings.Contains(fs, "=") {
 			parts := strings.Split(fs, "=")
-			if tableType == "mergeTree" {
-				filter += fmt.Sprintf("%s = '%s'", parts[0], parts[1])
-			} else if strings.Contains(tableType, "MV") {
-				filter += fmt.Sprintf("%s = '%s'", getCombinators(parts[0]), parts[1])
-			}
+			col = parts[0]
+			op = "="
+			args = append(args, fmt.Sprintf("%s", parts[1]))
 		}
 		if strings.Contains(fs, "~") {
 			parts := strings.Split(fs, "~")
-			if tableType == "mergeTree" {
-				filter += fmt.Sprintf("%s LIKE '%%%s%%'", parts[0], parts[1])
-			} else if strings.Contains(tableType, "MV") {
-				filter += fmt.Sprintf("%s LIKE '%%%s%%'", getCombinators(parts[0]), parts[1])
-			}
+			col = parts[0]
+			op = "LIKE"
+			args = append(args, fmt.Sprintf("%%%s%%", parts[1]))
 		}
 		if strings.Contains(fs, ">") {
 			parts := strings.Split(fs, ">")
 			intPart1, _ := strconv.Atoi(parts[1])
-			if tableType == "mergeTree" {
-				filter += fmt.Sprintf("%s > %v", parts[0], intPart1)
-			} else if strings.Contains(tableType, "MV") {
-				filter += fmt.Sprintf("%s > %v", getCombinators(parts[0]), intPart1)
-			}
+			col = parts[0]
+			op = ">"
+			args = append(args, intPart1)
 		}
 		if strings.Contains(fs, "<") {
 			parts := strings.Split(fs, "<")
 			intPart1, _ := strconv.Atoi(parts[1])
-			if tableType == "mergeTree" {
-				filter += fmt.Sprintf("%s < %v", parts[0], intPart1)
-			} else if strings.Contains(tableType, "MV") {
-				filter += fmt.Sprintf("%s < %v", getCombinators(parts[0]), intPart1)
-			}
+			col = parts[0]
+			op = "<"
+			args = append(args, intPart1)
+		}
+		if strings.Contains(tableType, "MV") {
+			col = getCombinators(col)
+		}
+
+		// This is done since we reply on dictGet() for loc and model in case of mergeTree
+		// and parameterized '?' does not work with it
+		if strings.Contains(tableType, "mergeTree") && (col == "loc" || col == "model") {
+			filter += fmt.Sprintf("%s %s %s", col, op, fmt.Sprintf("'%v'", args[len(args)-1]))
+			args = args[:len(args)-1]
+		} else {
+			filter += fmt.Sprintf("%s %s %s", col, op, placeHolder)
 		}
 	}
-	return filter
+	return filter, args
 }
 
 func getCombinators(order string) string {
