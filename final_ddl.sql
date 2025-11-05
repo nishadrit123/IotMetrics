@@ -719,3 +719,12 @@ from temperature_daily_summary group by (loc, day);
 
 
 select * from system.view_refreshes where database = 'metrics' 
+
+select corr(acu, act) from ( select loc, day, avgMerge(avgCurrentUsage) as acu, avgMerge(avgCurrentTemperature) as act from
+cpu_daily_summary JOIN temperature_daily_summary using (loc, day) where loc in ('Pune', 'Bangalore') group by (loc, day) );
+
+SELECT model, day, avgMerge(avgSpeed), avg(avgMerge(avgSpeed)) OVER (
+	PARTITION BY model  
+	ORDER BY day  
+    ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING 
+) as temp, avgMerge(avgSpeed) - temp from gps_daily_summary group by (model, day);  

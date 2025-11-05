@@ -68,6 +68,7 @@ func (app *application) Mount() http.Handler {
 			r.Route("/dailyaggregation", func(r chi.Router) {
 				r.Get("/model", app.getGPSDailyAggregationPerModel)
 			})
+			r.Get("/delta", app.getGPSDelta)
 		})
 
 		r.Route("/humidity", func(r chi.Router) {

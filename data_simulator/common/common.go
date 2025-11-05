@@ -39,6 +39,8 @@ type Metrics struct {
 	Speed            float64       `json:"speed_kmh,omitempty"`
 	Heading          float64       `json:"heading_degrees,omitempty"`
 	IsMoving         bool          `json:"is_moving,omitempty"`
+	RollingAverage   float64       `json:"rolling_average,omitempty"`
+	Delta            float64       `json:"delta,omitempty"`
 
 	CurrentUsage    float64   `json:"current_usage,omitempty"`
 	CurrentTemp     float64   `json:"current_temperature,omitempty"`

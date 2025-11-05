@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"iot/data_simulator/common"
 	"log"
@@ -13,6 +14,11 @@ import (
 
 type GPSStore struct {
 	ch *clickhouse.Conn
+}
+
+type Delta struct {
+	Preceding int `json:"preceding,omitempty"`
+	Following int `json:"following,omitempty"`
 }
 
 func (s *GPSStore) InsertBatch(data []common.Metrics) error {
@@ -62,9 +68,6 @@ func (s *GPSStore) GetStatistics(r *http.Request) (any, error) {
 	FROM gps %s
 	ORDER BY %s %s 
 	LIMIT ? OFFSET ?`, filter, order, sort_way)
-
-	log.Printf("***** %v *******\n", query)
-	log.Printf("***** %v *******\n", args)
 
 	rows, err := (*s.ch).Query(context.Background(), query, args...)
 	if err != nil {
@@ -215,6 +218,71 @@ func (s *GPSStore) GetDailyAggregationPerModel(r *http.Request) (any, error) {
 			&s.Altitude,
 			&s.DriftRate,
 			&s.CountRecords,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	result := map[string]any{
+		"data":        stats,
+		"page":        page,
+		"total_pages": totalPages,
+		"total_rows":  totalRows,
+	}
+	return result, nil
+}
+
+func (s *GPSStore) GetDelta(r *http.Request, delta []byte) (any, error) {
+	var (
+		d           Delta
+		customFrame string
+	)
+	order, sort_way, totalPages, totalRows, page, filter, args, err := Paginate(r, *s.ch, "gps_daily_summary", "refreshModelMV")
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(delta, &d)
+	if err != nil {
+		log.Printf("Error unmarshalling json payload %v\n", err)
+	} else {
+		customFrame += "ROWS BETWEEN "
+		if d.Preceding != 0 && d.Following == 0 {
+			customFrame += fmt.Sprintf("%v PRECEDING AND CURRENT ROW", d.Preceding)
+		} else if d.Preceding == 0 && d.Following != 0 {
+			customFrame += fmt.Sprintf("CURRENT ROW AND %v FOLLOWING", d.Following)
+		} else if d.Preceding != 0 && d.Following != 0 {
+			customFrame += fmt.Sprintf("%v PRECEDING AND %v FOLLOWING", d.Preceding, d.Following)
+		}
+	}
+
+	query := fmt.Sprintf(`
+	SELECT model, day, avgMerge(avgSpeed), 
+	avg(avgMerge(avgSpeed)) OVER (
+		PARTITION BY model  
+		ORDER BY day  
+		%v
+	) as rolling_avg, (avgMerge(avgSpeed) - rolling_avg) as delta
+	FROM gps_daily_summary group by (model, day) %s
+	ORDER BY %s %s 
+	LIMIT ? OFFSET ?`, customFrame, filter, order, sort_way)
+
+	rows, err := (*s.ch).Query(context.Background(), query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := []common.Metrics{}
+	for rows.Next() {
+		var s common.Metrics
+		err := rows.Scan(
+			&s.Model,
+			&s.Day,
+			&s.Speed,
+			&s.RollingAverage,
+			&s.Delta,
 		)
 		if err != nil {
 			return nil, err
