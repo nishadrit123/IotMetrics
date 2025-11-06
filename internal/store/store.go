@@ -8,6 +8,7 @@ type Store struct {
 	Humidity    interface{}
 	Pressure    interface{}
 	Temperature interface{}
+	HeatMap     interface{}
 }
 
 func NewStore(ch *clickhouse.Conn) Store {
@@ -17,5 +18,6 @@ func NewStore(ch *clickhouse.Conn) Store {
 		Humidity:    &HumidityStore{ch},
 		Pressure:    &PressureStore{ch},
 		Temperature: &TemperatureStore{ch},
+		HeatMap:     &HeatMapStore{ch},
 	}
 }

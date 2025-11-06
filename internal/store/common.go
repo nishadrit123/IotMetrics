@@ -10,6 +10,21 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
+var Tables = []string{
+	"cpu_daily_summary", "temperature_daily_summary",
+	"pressure_daily_summary", "humidity_daily_summary",
+}
+
+var TableMap map[string]string
+
+func init() {
+	TableMap = make(map[string]string)
+	TableMap["cpu_daily_summary"] = "avgCurrentUsage"
+	TableMap["temperature_daily_summary"] = "avgCurrentTemperature"
+	TableMap["pressure_daily_summary"] = "avgCurrentPressure"
+	TableMap["humidity_daily_summary"] = "avgCurrentHumidity"
+}
+
 func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) (string, string, int, int, int, string, []any, error) {
 	var (
 		totalRows uint64
