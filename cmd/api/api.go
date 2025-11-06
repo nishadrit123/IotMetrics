@@ -103,6 +103,8 @@ func (app *application) Mount() http.Handler {
 				r.Get("/location", app.getTemperatureDailyAggregationPerLocation)
 			})
 		})
+
+		r.Get("/heatmap", app.getHeatMap)
 	})
 
 	return r

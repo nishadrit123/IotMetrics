@@ -72,7 +72,7 @@ func (app *application) getGPSDelta(w http.ResponseWriter, r *http.Request) {
 	}
 	strDelta, err := json.Marshal(payload)
 	if err != nil {
-		log.Printf("Error marshalling json payload %v\n", err)
+		log.Printf("Error marshalling json payload for GPS Delta %v\n", err)
 	}
 
 	gpsDelta, err := app.store.GPS.(*st.GPSStore).GetDelta(r, strDelta)

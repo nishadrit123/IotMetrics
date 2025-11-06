@@ -246,7 +246,7 @@ func (s *GPSStore) GetDelta(r *http.Request, delta []byte) (any, error) {
 
 	err = json.Unmarshal(delta, &d)
 	if err != nil {
-		log.Printf("Error unmarshalling json payload %v\n", err)
+		log.Printf("Error unmarshalling json payload for GPS delta %v\n", err)
 	} else {
 		customFrame += "ROWS BETWEEN "
 		if d.Preceding != 0 && d.Following == 0 {
