@@ -1,104 +1,119 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-const AdvancedSearchModal = ({ show, handleClose, columns, onApply }) => {
-  const [filters, setFilters] = useState([
-    { column: "", operator: "=", value: "" },
-  ]);
+const AdvancedSearchModal = ({
+  show,
+  handleClose,
+  columns,
+  onApply,
+  defaultFilters = [],
+}) => {
+  const [filters, setFilters] = useState([]);
 
-  const handleAddFilter = () => {
-    setFilters([...filters, { column: "", operator: "=", value: "" }]);
+  // 🧠 Initialize filters when modal opens or defaults change
+  useEffect(() => {
+    if (show) {
+      if (defaultFilters.length > 0) {
+        // clone array to avoid mutation issues
+        setFilters(JSON.parse(JSON.stringify(defaultFilters)));
+      } else {
+        setFilters([{ field: "", operator: "=", value: "" }]);
+      }
+    }
+  }, [show, defaultFilters]);
+
+  const addFilter = () => {
+    setFilters([...filters, { field: "", operator: "=", value: "" }]);
   };
 
-  const handleRemoveFilter = (index) => {
+  const removeFilter = (index) => {
     const updated = filters.filter((_, i) => i !== index);
-    setFilters(updated);
+    setFilters(updated.length ? updated : [{ field: "", operator: "=", value: "" }]);
   };
 
-  const handleChange = (index, key, value) => {
+  const updateFilter = (index, key, value) => {
     const updated = [...filters];
     updated[index][key] = value;
     setFilters(updated);
   };
 
-  const handleApply = () => {
-    const filterString = filters
-      .filter((f) => f.column && f.operator && f.value)
-      .map((f) => `${f.column}${f.operator}${f.value}`)
+  const applyFilters = () => {
+    const validFilters = filters.filter((f) => f.field && f.value);
+    const filterString = validFilters
+      .map((f) => `${f.field}${f.operator}${f.value}`)
       .join(":");
     onApply(filterString);
     handleClose();
   };
 
-  const formatColumnName = (name) => {
-    return name
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
-
   return (
-    <Modal show={show} onHide={handleClose} centered size="lg">
+    <Modal show={show} onHide={handleClose} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Advanced Search</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {filters.map((filter, index) => (
-          <Row className="mb-3" key={index}>
-            <Col md={4}>
+          <Row key={index} className="mb-2 align-items-center">
+            <Col xs={4}>
               <Form.Select
-                value={filter.column}
-                onChange={(e) => handleChange(index, "column", e.target.value)}
+                value={filter.field}
+                onChange={(e) => updateFilter(index, "field", e.target.value)}
               >
                 <option value="">Select Column</option>
                 {columns.map((col) => (
                   <option key={col} value={col}>
-                    {formatColumnName(col)}
+                    {col.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
                   </option>
                 ))}
               </Form.Select>
             </Col>
-            <Col md={2}>
+
+            <Col xs={3}>
               <Form.Select
                 value={filter.operator}
-                onChange={(e) =>
-                  handleChange(index, "operator", e.target.value)
-                }
+                onChange={(e) => updateFilter(index, "operator", e.target.value)}
               >
                 <option value="=">=</option>
-                <option value="~">~</option>
+                <option value="!=">!=</option>
                 <option value=">">&gt;</option>
                 <option value="<">&lt;</option>
+                <option value=">=">&gt;=</option>
+                <option value="<=">&lt;=</option>
+                <option value="like">like</option>
               </Form.Select>
             </Col>
-            <Col md={4}>
+
+            <Col xs={4}>
               <Form.Control
                 type="text"
                 placeholder="Value"
                 value={filter.value}
-                onChange={(e) => handleChange(index, "value", e.target.value)}
+                onChange={(e) => updateFilter(index, "value", e.target.value)}
               />
             </Col>
-            <Col md={2}>
+
+            <Col xs={1} className="text-center">
               <Button
                 variant="outline-danger"
-                onClick={() => handleRemoveFilter(index)}
-                disabled={filters.length === 1}
+                size="sm"
+                onClick={() => removeFilter(index)}
               >
-                ❌
+                ✖
               </Button>
             </Col>
           </Row>
         ))}
-
-        <Button variant="outline-primary" onClick={handleAddFilter}>
-          ➕ Add Filter
-        </Button>
+        <div className="d-flex justify-content-start mt-3">
+          <Button variant="outline-secondary" size="sm" onClick={addFilter}>
+            ➕ Add Filter
+          </Button>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={handleApply}>
+        <Button variant="primary" onClick={applyFilters}>
           Apply
         </Button>
       </Modal.Footer>

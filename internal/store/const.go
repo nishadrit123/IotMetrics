@@ -21,6 +21,8 @@ func init() {
 	DictMap["hostname"] = "String"
 	DictMap["loc"] = "String"
 	DictMap["model"] = "String"
+	DictMap["manufacturer"] = "String"
 	DictMap["core_count"] = "Int64"
 	DictMap["frequency"] = "Float64"
+	DictMap["install_date"] = "Date"
 }
