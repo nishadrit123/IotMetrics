@@ -2,7 +2,6 @@ import React from "react";
 import DataTable from "../../components/DataTable";
 
 function CPU() {
-  // Define which columns you want to display for CPU
   const cpuColumns = [
     "device_id",
     "loc",
