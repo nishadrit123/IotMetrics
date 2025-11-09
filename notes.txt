@@ -2,8 +2,10 @@ Start the Click house server
     Open Clickhouse directory (cd ~/clickhouse) in WSL 
     Start server using ./clickhouse server 
 
-Start the Application 
+Start the BackEnd 
     air 
 
+Start the FrontEnd
+    npm run dev
 
 Why was FINAL used ?

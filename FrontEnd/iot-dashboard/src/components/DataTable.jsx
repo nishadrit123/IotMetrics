@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Table, Spinner } from "react-bootstrap";
+import { Table, Spinner, Button } from "react-bootstrap";
+import { useSearchParams } from "react-router-dom"; // 🧠 add this
 import PaginationBar from "./PaginationBar";
+import AdvancedSearchModal from "./AdvancedSearchModal";
 
 const DataTable = ({ apiBaseUrl, columns }) => {
+  const [searchParams, setSearchParams] = useSearchParams(); // 🧠 manage URL params
+
   const [data, setData] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [orderBy, setOrderBy] = useState("");
-  const [sort, setSort] = useState("asc");
 
-  // 🧠 Format column headers (CPU_Model → CPU Model)
-  const formatColumnName = (name) => {
-    return name
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
+  // 🧠 initialize state from URL params (if any)
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+  const [orderBy, setOrderBy] = useState(searchParams.get("order") || "");
+  const [sort, setSort] = useState(searchParams.get("sort") || "asc");
+  const [filter, setFilter] = useState(searchParams.get("filter") || "");
+  const [showModal, setShowModal] = useState(false);
 
-  // 🧩 Fetch data with pagination + sorting
-  const fetchData = async (page = 1, order = orderBy, sortDir = sort) => {
+  const formatColumnName = (name) =>
+    name.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const fetchData = async (page = 1, order = orderBy, sortDir = sort, filterVal = filter) => {
     try {
       setLoading(true);
       let url = `${apiBaseUrl}?page=${page}`;
@@ -26,12 +29,14 @@ const DataTable = ({ apiBaseUrl, columns }) => {
         url += `&order=${order}`;
         if (sortDir === "desc") url += `&sort=desc`;
       }
+      if (filterVal) {
+        url += `&filter=${encodeURIComponent(filterVal)}`;
+      }
 
       const res = await fetch(url);
       const result = await res.json();
       console.log("API Response:", result);
 
-      // ✅ Handle deeply nested data safely
       const tableData =
         result?.data?.data?.data || result?.data?.data || result?.data || [];
       const total =
@@ -50,12 +55,21 @@ const DataTable = ({ apiBaseUrl, columns }) => {
     }
   };
 
-  // 🔁 Refetch when page/sort changes
+  // 🧠 Whenever relevant state changes, update URL query
   useEffect(() => {
-    fetchData(currentPage, orderBy, sort);
-  }, [currentPage, orderBy, sort]);
+    const params = {};
+    if (orderBy) params.order = orderBy;
+    if (sort) params.sort = sort;
+    if (filter) params.filter = filter;
+    if (currentPage) params.page = currentPage;
+    setSearchParams(params);
+  }, [orderBy, sort, filter, currentPage, setSearchParams]);
 
-  // ⬆️⬇️ Handle sort logic
+  // 🧠 Fetch data when params change
+  useEffect(() => {
+    fetchData(currentPage, orderBy, sort, filter);
+  }, [currentPage, orderBy, sort, filter]);
+
   const handleSort = (column) => {
     if (orderBy === column) {
       setSort(sort === "asc" ? "desc" : "asc");
@@ -72,6 +86,19 @@ const DataTable = ({ apiBaseUrl, columns }) => {
 
   return (
     <div className="px-3" style={{ width: "100%", overflowX: "auto" }}>
+      <div className="d-flex justify-content-end mb-2">
+        <Button variant="outline-info" onClick={() => setShowModal(true)}>
+          🔍 Advanced Search
+        </Button>
+      </div>
+
+      <AdvancedSearchModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        columns={columns}
+        onApply={(filterString) => setFilter(filterString)}
+      />
+
       {loading ? (
         <div className="text-center my-5">
           <Spinner animation="border" />
@@ -84,10 +111,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
               hover
               responsive
               className="align-middle text-center table-sm custom-table"
-              style={{
-                tableLayout: "fixed",
-                width: "100%",
-              }}
+              style={{ tableLayout: "fixed", width: "100%" }}
             >
               <thead className="table-dark">
                 <tr>
@@ -97,7 +121,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
                       onClick={() => handleSort(col)}
                       style={{
                         cursor: "pointer",
-                        whiteSpace: "normal", // allows wrapping
+                        whiteSpace: "normal",
                         wordBreak: "break-word",
                         verticalAlign: "middle",
                         padding: "8px 4px",
@@ -136,9 +160,9 @@ const DataTable = ({ apiBaseUrl, columns }) => {
                             fontSize: "13px",
                             padding: "6px 8px",
                           }}
-                          title={row[key]}
+                          title={String(row[key])}
                         >
-                          {row[key] ?? "-"}
+                          {String(row[key]) === "undefined" ? "false" : String(row[key])}
                         </td>
                       ))}
                     </tr>
@@ -157,7 +181,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
           <PaginationBar
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={(page) => fetchData(page, orderBy, sort)}
+            onPageChange={(page) => setCurrentPage(page)} // 🧠 just update state
           />
         </>
       )}
