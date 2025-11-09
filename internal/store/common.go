@@ -10,23 +10,6 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
-const PageSize = 10
-
-var Tables = []string{
-	"cpu_daily_summary", "temperature_daily_summary",
-	"pressure_daily_summary", "humidity_daily_summary",
-}
-
-var TableMap map[string]string
-
-func init() {
-	TableMap = make(map[string]string)
-	TableMap["cpu_daily_summary"] = "avgCurrentUsage"
-	TableMap["temperature_daily_summary"] = "avgCurrentTemperature"
-	TableMap["pressure_daily_summary"] = "avgCurrentPressure"
-	TableMap["humidity_daily_summary"] = "avgCurrentHumidity"
-}
-
 func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) (string, string, int, int, int, string, []any, error) {
 	var (
 		totalRows uint64
@@ -75,10 +58,10 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 		query = fmt.Sprintf("SELECT count() FROM %v %v", tableName, final)
 	} else {
 		if tableType == "mergeTree" {
-			locStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'loc', device_id)", tableName)
-			modelStr := fmt.Sprintf("dictGetString(%v_metadatadict, 'model', device_id)", tableName)
-			filter = strings.Replace(filter, "loc", locStr, -1)
-			filter = strings.Replace(filter, "model", modelStr, -1)
+			for key, val := range DictMap {
+				dictStr := fmt.Sprintf("dictGet%v(%v_metadatadict, '%v', device_id)", val, tableName, key)
+				filter = strings.Replace(filter, key, dictStr, -1)
+			}
 			query = fmt.Sprintf("SELECT count() FROM %v %v", tableName, filter)
 		} else if strings.Contains(tableType, "MV") {
 			if strings.Contains(tableType, "incremental") {

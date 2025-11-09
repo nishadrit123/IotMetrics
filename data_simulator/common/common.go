@@ -12,9 +12,9 @@ type Metrics struct {
 	Loc               string    `json:"loc,omitempty"`
 	Model             string    `json:"model,omitempty"`
 	DeviceName        string    `json:"device_name,omitempty"`
-	HostName          string    `json:"host_name,omitempty"`
+	HostName          string    `json:"hostname,omitempty"`
 	CoreCount         int64     `json:"core_count,omitempty"`
-	Frequency         float64   `json:"frequency_ghz,omitempty"`
+	Frequency         float64   `json:"frequency,omitempty"`
 	Manufacturer      string    `json:"manufacturer,omitempty"`
 	CountManufacturer uint64    `json:"count_manufacturer,omitempty"`
 	InstallDate       time.Time `json:"install_date,omitempty"`
@@ -46,7 +46,7 @@ type Metrics struct {
 	CurrentTemp     float64   `json:"current_temperature,omitempty"`
 	CurrentHumidity float64   `json:"current_humidity,omitempty"`
 	CurrentPressure float64   `json:"current_pressure,omitempty"`
-	Temperature     float64   `json:"temperature_celsius,omitempty"`
+	Temperature     float64   `json:"cpu_temperature,omitempty"`
 	IsSpiking       bool      `json:"is_spiking,omitempty"`
 	LastSpikeTime   time.Time `json:"last_spike_time,omitempty"`
 	NextRead        time.Time `json:"next_read_time,omitempty"`
