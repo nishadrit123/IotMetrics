@@ -1,34 +1,60 @@
 import React from "react";
-import { Pagination } from "react-bootstrap";
 
-const PaginationBar = ({ totalPages = 10, currentPage = 1 }) => {
-  const lastPage = totalPages;
-  const pageItems = [];
+export default function PaginationBar({ totalPages, currentPage, onPageChange }) {
+  const renderPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 3;
 
-  // show first three pages
-  for (let i = 1; i <= 3 && i <= lastPage; i++) {
-    pageItems.push(
-      <Pagination.Item key={i} active={i === currentPage}>
-        {i}
-      </Pagination.Item>
-    );
-  }
+    let start = Math.max(1, currentPage - 1);
+    let end = Math.min(totalPages, start + maxVisible - 1);
 
-  // show ellipsis if more pages
-  if (lastPage > 4) {
-    pageItems.push(<Pagination.Ellipsis key="ellipsis" disabled />);
-    pageItems.push(<Pagination.Item key={lastPage}>{lastPage}</Pagination.Item>);
-  }
+    if (end - start < maxVisible - 1) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(
+        <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
+          <button className="page-link" onClick={() => onPageChange(i)}>
+            {i}
+          </button>
+        </li>
+      );
+    }
+
+    return pages;
+  };
 
   return (
-    <div className="d-flex justify-content-center mt-4">
-      <Pagination>
-        <Pagination.Prev disabled={currentPage === 1} />
-        {pageItems}
-        <Pagination.Next disabled={currentPage === lastPage} />
-      </Pagination>
-    </div>
-  );
-};
+    <nav className="mt-3">
+      <ul className="pagination justify-content-center">
+        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+          <button className="page-link" onClick={() => onPageChange(currentPage - 1)}>
+            &laquo;
+          </button>
+        </li>
 
-export default PaginationBar;
+        {renderPageNumbers()}
+
+        {totalPages > 3 && (
+          <>
+            <li className="page-item disabled">
+              <span className="page-link">...</span>
+            </li>
+            <li className="page-item">
+              <button className="page-link" onClick={() => onPageChange(totalPages)}>
+                {totalPages}
+              </button>
+            </li>
+          </>
+        )}
+
+        <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+          <button className="page-link" onClick={() => onPageChange(currentPage + 1)}>
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+}
