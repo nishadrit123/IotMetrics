@@ -10,6 +10,8 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
+const PageSize = 5
+
 var Tables = []string{
 	"cpu_daily_summary", "temperature_daily_summary",
 	"pressure_daily_summary", "humidity_daily_summary",
@@ -103,7 +105,7 @@ func Paginate(r *http.Request, ch clickhouse.Conn, tableName, tableType string) 
 		return order, sort_way, 0, 0, 0, filter, args, err
 	}
 
-	rowsPerPage := 10
+	rowsPerPage := PageSize
 	totalPages := int((totalRows + uint64(rowsPerPage) - 1) / uint64(rowsPerPage))
 	offset := (page - 1) * rowsPerPage
 
