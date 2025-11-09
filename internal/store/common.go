@@ -10,7 +10,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
-const PageSize = 5
+const PageSize = 10
 
 var Tables = []string{
 	"cpu_daily_summary", "temperature_daily_summary",
