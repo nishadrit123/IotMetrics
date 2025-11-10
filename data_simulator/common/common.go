@@ -35,9 +35,9 @@ type Metrics struct {
 	CountTrend       uint64        `json:"count_trend,omitempty"`
 	Latitude         float64       `json:"latitude,omitempty"`
 	Longitude        float64       `json:"longitude,omitempty"`
-	Altitude         float64       `json:"altitude_meters,omitempty"`
-	Speed            float64       `json:"speed_kmh,omitempty"`
-	Heading          float64       `json:"heading_degrees,omitempty"`
+	Altitude         float64       `json:"altitude,omitempty"`
+	Speed            float64       `json:"speed,omitempty"`
+	Heading          float64       `json:"heading,omitempty"`
 	IsMoving         bool          `json:"is_moving,omitempty"`
 	RollingAverage   float64       `json:"rolling_average,omitempty"`
 	Delta            float64       `json:"delta,omitempty"`

@@ -74,12 +74,9 @@ const AdvancedSearchModal = ({
                 onChange={(e) => updateFilter(index, "operator", e.target.value)}
               >
                 <option value="=">=</option>
-                <option value="!=">!=</option>
+                <option value="~">~</option>
                 <option value=">">&gt;</option>
                 <option value="<">&lt;</option>
-                <option value=">=">&gt;=</option>
-                <option value="<=">&lt;=</option>
-                <option value="like">like</option>
               </Form.Select>
             </Col>
 
