@@ -130,9 +130,9 @@ func (s *CPUStore) GetAggregationPerLocation(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Loc,
-			&s.SpikeMagnitude,
-			&s.CurrentUsage,
-			&s.Temperature,
+			&s.MaxSpikeMagnitude,
+			&s.AvgCurrentUsage,
+			&s.TotalCPUTemperature,
 		)
 		if err != nil {
 			return nil, err
@@ -171,8 +171,8 @@ func (s *CPUStore) GetAggregationPerModel(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Model,
-			&s.CountRecords,
-			&s.CountNoise,
+			&s.UniqFrequency,
+			&s.CountNoiseLevel,
 		)
 		if err != nil {
 			return nil, err
@@ -213,9 +213,9 @@ func (s *CPUStore) GetDailyAggregationPerLocation(r *http.Request) (any, error) 
 		err := rows.Scan(
 			&s.Loc,
 			&s.Day,
-			&s.CurrentUsage,
-			&s.SpikeMagnitude,
-			&s.Temperature,
+			&s.AvgCurrentUsage,
+			&s.MaxSpikeMagnitude,
+			&s.AvgCPUTemperature,
 			&s.CountRecords,
 		)
 		if err != nil {

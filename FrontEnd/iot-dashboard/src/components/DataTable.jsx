@@ -11,30 +11,29 @@ const DataTable = ({ apiBaseUrl, columns }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // Initialize states from URL (persistent between reloads)
+  // 🧠 Initialize from URL
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [orderBy, setOrderBy] = useState(searchParams.get("order") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "asc");
   const [filter, setFilter] = useState(searchParams.get("filter") || "");
   const [showModal, setShowModal] = useState(false);
 
-  // 🧠 Store parsed filter state for modal prefill
-  const [filterValues, setFilterValues] = useState([]);
+  // 🧠 Convert `filter` string into array for AdvancedSearchModal
+  const parseFilterString = (filterString) => {
+    if (!filterString) return [];
+    const parts = filterString.split(":");
+    return parts.map((p) => {
+      const match = p.match(/^([^<>=~]+)([<>=~]{1})(.+)$/);
+      if (!match) return { field: "", operator: "=", value: "" };
+      return { field: match[1], operator: match[2], value: match[3] };
+    });
+  };
+
+  const defaultFilters = parseFilterString(filter);
 
   const formatColumnName = (name) =>
     name.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 
-  // 🔍 Parse filter string ("a=1:b>2") → structured array for AdvancedSearchModal
-  const parseFilterString = (filterString) => {
-    if (!filterString) return [];
-    return filterString.split(":").map((part) => {
-      const match = part.match(/([^=<>!]+)([=<>!]+)(.+)/);
-      if (!match) return null;
-      return { field: match[1], operator: match[2], value: match[3] };
-    }).filter(Boolean);
-  };
-
-  // 🧩 Fetch data from backend
   const fetchData = async (page = 1, order = orderBy, sortDir = sort, filterVal = filter) => {
     try {
       setLoading(true);
@@ -69,7 +68,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
     }
   };
 
-  // 🧠 Keep URL in sync with state
+  // 🧠 Update URL whenever params change
   useEffect(() => {
     const params = {};
     if (orderBy) params.order = orderBy;
@@ -79,15 +78,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
     setSearchParams(params);
   }, [orderBy, sort, filter, currentPage, setSearchParams]);
 
-  // 🧠 Load filter state from URL on mount (so modal remembers previous state)
-  useEffect(() => {
-    if (filter) {
-      const parsed = parseFilterString(filter);
-      setFilterValues(parsed);
-    }
-  }, []); // only once on mount
-
-  // 🔁 Fetch data when parameters change
+  // 🧠 Refetch data when params change
   useEffect(() => {
     fetchData(currentPage, orderBy, sort, filter);
   }, [currentPage, orderBy, sort, filter]);
@@ -118,11 +109,8 @@ const DataTable = ({ apiBaseUrl, columns }) => {
         show={showModal}
         handleClose={() => setShowModal(false)}
         columns={columns}
-        onApply={(filterString) => {
-          setFilter(filterString);
-          setFilterValues(parseFilterString(filterString)); // 🧠 sync local state
-        }}
-        defaultFilters={filterValues} // 🧠 prefill modal inputs
+        onApply={(filterString) => setFilter(filterString)}
+        defaultFilters={defaultFilters}
       />
 
       {loading ? (
