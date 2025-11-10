@@ -18,37 +18,42 @@ type Metrics struct {
 	Manufacturer      string    `json:"manufacturer,omitempty"`
 	CountManufacturer uint64    `json:"count_manufacturer,omitempty"`
 	InstallDate       time.Time `json:"install_date,omitempty"`
-	CountRecords      uint64    `json:"count_records,omitempty"`
-	CountNoise        uint64    `json:"count_noise,omitempty"`
+	CountRecords      uint64    `json:"countRecords,omitempty"`
+	UniqFrequency     uint64    `json:"uniqFrequency,omitempty"`
+	CountNoiseLevel   uint64    `json:"countNoiseLevel,omitempty"`
 	Day               string    `json:"day,omitempty"`
 
-	BaselineUsage    float64       `json:"baseline_usage,omitempty"`
-	BaselineHumidity float64       `json:"baseline_humidity,omitempty"`
-	BaselineTemp     float64       `json:"baseline_temperature,omitempty"`
-	BaselinePressure float64       `json:"baseline_pressure,omitempty"`
-	SpikeProbability float64       `json:"spike_probability,omitempty"`
-	SpikeMagnitude   float64       `json:"spike_magnitude,omitempty"`
-	NoiseLevel       float64       `json:"noise_level,omitempty"`
-	UpdateInterval   time.Duration `json:"update_interval_seconds,omitempty"`
-	DriftRate        float64       `json:"drift_rate,omitempty"`
-	Trend            string        `json:"trend,omitempty"`
-	CountTrend       uint64        `json:"count_trend,omitempty"`
-	Latitude         float64       `json:"latitude,omitempty"`
-	Longitude        float64       `json:"longitude,omitempty"`
-	Altitude         float64       `json:"altitude,omitempty"`
-	Speed            float64       `json:"speed,omitempty"`
-	Heading          float64       `json:"heading,omitempty"`
-	IsMoving         bool          `json:"is_moving,omitempty"`
-	RollingAverage   float64       `json:"rolling_average,omitempty"`
-	Delta            float64       `json:"delta,omitempty"`
+	BaselineUsage     float64       `json:"baseline_usage,omitempty"`
+	BaselineHumidity  float64       `json:"baseline_humidity,omitempty"`
+	BaselineTemp      float64       `json:"baseline_temperature,omitempty"`
+	BaselinePressure  float64       `json:"baseline_pressure,omitempty"`
+	SpikeProbability  float64       `json:"spike_probability,omitempty"`
+	SpikeMagnitude    float64       `json:"spike_magnitude,omitempty"`
+	MaxSpikeMagnitude float64       `json:"maxSpikeMagnitude,omitempty"`
+	NoiseLevel        float64       `json:"noise_level,omitempty"`
+	UpdateInterval    time.Duration `json:"update_interval_seconds,omitempty"`
+	DriftRate         float64       `json:"drift_rate,omitempty"`
+	Trend             string        `json:"trend,omitempty"`
+	CountTrend        uint64        `json:"count_trend,omitempty"`
+	Latitude          float64       `json:"latitude,omitempty"`
+	Longitude         float64       `json:"longitude,omitempty"`
+	Altitude          float64       `json:"altitude,omitempty"`
+	Speed             float64       `json:"speed,omitempty"`
+	Heading           float64       `json:"heading,omitempty"`
+	IsMoving          bool          `json:"is_moving,omitempty"`
+	RollingAverage    float64       `json:"rolling_average,omitempty"`
+	Delta             float64       `json:"delta,omitempty"`
 
-	CurrentUsage    float64   `json:"current_usage,omitempty"`
-	CurrentTemp     float64   `json:"current_temperature,omitempty"`
-	CurrentHumidity float64   `json:"current_humidity,omitempty"`
-	CurrentPressure float64   `json:"current_pressure,omitempty"`
-	Temperature     float64   `json:"cpu_temperature,omitempty"`
-	IsSpiking       bool      `json:"is_spiking,omitempty"`
-	LastSpikeTime   time.Time `json:"last_spike_time,omitempty"`
-	NextRead        time.Time `json:"next_read_time,omitempty"`
-	UpdatedAt       time.Time `json:"updated_at,omitempty"`
+	CurrentUsage        float64   `json:"current_usage,omitempty"`
+	AvgCurrentUsage     float64   `json:"avgCurrentUsage,omitempty"`
+	CurrentTemp         float64   `json:"current_temperature,omitempty"`
+	CurrentHumidity     float64   `json:"current_humidity,omitempty"`
+	CurrentPressure     float64   `json:"current_pressure,omitempty"`
+	Temperature         float64   `json:"cpu_temperature,omitempty"`
+	TotalCPUTemperature float64   `json:"totalCPUTemperature,omitempty"`
+	AvgCPUTemperature   float64   `json:"avgCPUTemperature,omitempty"`
+	IsSpiking           bool      `json:"is_spiking,omitempty"`
+	LastSpikeTime       time.Time `json:"last_spike_time,omitempty"`
+	NextRead            time.Time `json:"next_read_time,omitempty"`
+	UpdatedAt           time.Time `json:"updated_at,omitempty"`
 }
