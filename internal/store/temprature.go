@@ -130,9 +130,9 @@ func (s *TemperatureStore) GetAggregationPerLocation(r *http.Request) (any, erro
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Loc,
-			&s.SpikeMagnitude,
-			&s.Temperature,
-			&s.DriftRate,
+			&s.MaxSpikeMagnitude,
+			&s.AvgCurrentTemperature,
+			&s.MinDriftRate,
 		)
 		if err != nil {
 			return nil, err
@@ -171,7 +171,7 @@ func (s *TemperatureStore) GetAggregationPerModel(r *http.Request) (any, error) 
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Model,
-			&s.CountTrend,
+			&s.UniqTrend,
 			&s.CountManufacturer,
 		)
 		if err != nil {
@@ -213,9 +213,9 @@ func (s *TemperatureStore) GetDailyAggregationPerLocation(r *http.Request) (any,
 		err := rows.Scan(
 			&s.Loc,
 			&s.Day,
-			&s.Temperature,
-			&s.SpikeMagnitude,
-			&s.BaselineTemp,
+			&s.AvgCurrentTemperature,
+			&s.MaxSpikeMagnitude,
+			&s.SumBaselineTemp,
 			&s.CountRecords,
 		)
 		if err != nil {

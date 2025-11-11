@@ -131,9 +131,9 @@ func (s *GPSStore) GetAggregationPerLocation(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Loc,
-			&s.Longitude,
-			&s.Latitude,
-			&s.DriftRate,
+			&s.MaxLongitude,
+			&s.AvgLatitude,
+			&s.MinDriftRate,
 		)
 		if err != nil {
 			return nil, err
@@ -172,7 +172,7 @@ func (s *GPSStore) GetAggregationPerModel(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Model,
-			&s.Heading,
+			&s.MaxHeading,
 			&s.CountManufacturer,
 		)
 		if err != nil {
@@ -214,9 +214,9 @@ func (s *GPSStore) GetDailyAggregationPerModel(r *http.Request) (any, error) {
 		err := rows.Scan(
 			&s.Model,
 			&s.Day,
-			&s.Speed,
-			&s.Altitude,
-			&s.DriftRate,
+			&s.AvgSpeed,
+			&s.MaxAltitude,
+			&s.SumDriftRate,
 			&s.CountRecords,
 		)
 		if err != nil {
