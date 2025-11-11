@@ -1,22 +1,24 @@
 import React from "react";
 import DataTable from "../../../components/DataTable";
 
-function CPU() {
-  const cpuColumns = [
-    "loc",
-    "maxSpikeMagnitude",
-    "avgCurrentUsage",
-    "totalCPUTemperature",
+function GPS() {
+  const gpsColumns = [
+    "model",
+    "day",
+    "avgSpeed",
+    "maxAltitude",
+    "sumDriftRate",
+    "countRecords",
   ];
 
   return (
     <div className="container mt-4">
       <DataTable
-        apiBaseUrl="http://localhost:8080/v1/cpu/aggregation/location"
-        columns={cpuColumns}
+        apiBaseUrl="http://localhost:8080/v1/gps/dailyaggregation/model"
+        columns={gpsColumns}
       />
     </div>
   );
 }
 
-export default CPU;
+export default GPS;

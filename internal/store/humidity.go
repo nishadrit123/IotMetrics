@@ -130,9 +130,9 @@ func (s *HumidityStore) GetAggregationPerLocation(r *http.Request) (any, error) 
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Loc,
-			&s.SpikeMagnitude,
-			&s.CurrentHumidity,
-			&s.DriftRate,
+			&s.MaxSpikeMagnitude,
+			&s.AvgCurrentHumidity,
+			&s.MinDriftRate,
 		)
 		if err != nil {
 			return nil, err
@@ -171,7 +171,7 @@ func (s *HumidityStore) GetAggregationPerModel(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Model,
-			&s.CountTrend,
+			&s.UniqTrend,
 			&s.CountManufacturer,
 		)
 		if err != nil {
@@ -213,9 +213,9 @@ func (s *HumidityStore) GetDailyAggregationPerLocation(r *http.Request) (any, er
 		err := rows.Scan(
 			&s.Loc,
 			&s.Day,
-			&s.CurrentHumidity,
-			&s.SpikeMagnitude,
-			&s.BaselineHumidity,
+			&s.AvgCurrentHumidity,
+			&s.MaxSpikeMagnitude,
+			&s.SumBaselineHumidity,
 			&s.CountRecords,
 		)
 		if err != nil {

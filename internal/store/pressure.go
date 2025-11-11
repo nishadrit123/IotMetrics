@@ -130,9 +130,9 @@ func (s *PressureStore) GetAggregationPerLocation(r *http.Request) (any, error) 
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Loc,
-			&s.SpikeMagnitude,
-			&s.CurrentPressure,
-			&s.DriftRate,
+			&s.MaxSpikeMagnitude,
+			&s.AvgCurrentPressure,
+			&s.MinDriftRate,
 		)
 		if err != nil {
 			return nil, err
@@ -171,7 +171,7 @@ func (s *PressureStore) GetAggregationPerModel(r *http.Request) (any, error) {
 		var s common.Metrics
 		err := rows.Scan(
 			&s.Model,
-			&s.CountTrend,
+			&s.UniqTrend,
 			&s.CountManufacturer,
 		)
 		if err != nil {
@@ -213,9 +213,9 @@ func (s *PressureStore) GetDailyAggregationPerLocation(r *http.Request) (any, er
 		err := rows.Scan(
 			&s.Loc,
 			&s.Day,
-			&s.CurrentPressure,
-			&s.SpikeMagnitude,
-			&s.BaselinePressure,
+			&s.AvgCurrentPressure,
+			&s.MaxSpikeMagnitude,
+			&s.SumBaselinePressure,
 			&s.CountRecords,
 		)
 		if err != nil {

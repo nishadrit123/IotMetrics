@@ -1,22 +1,24 @@
 import React from "react";
 import DataTable from "../../../components/DataTable";
 
-function CPU() {
-  const cpuColumns = [
+function Humidity() {
+  const humidityColumns = [
     "loc",
+    "day",
+    "avgCurrentHumidity",
     "maxSpikeMagnitude",
-    "avgCurrentUsage",
-    "totalCPUTemperature",
+    "sumBaselineHumidity",
+    "countRecords",
   ];
 
   return (
     <div className="container mt-4">
       <DataTable
-        apiBaseUrl="http://localhost:8080/v1/cpu/aggregation/location"
-        columns={cpuColumns}
+        apiBaseUrl="http://localhost:8080/v1/humidity/dailyaggregation/location"
+        columns={humidityColumns}
       />
     </div>
   );
 }
 
-export default CPU;
+export default Humidity;
