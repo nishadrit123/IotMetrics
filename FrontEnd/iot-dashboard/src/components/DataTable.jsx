@@ -11,14 +11,18 @@ const DataTable = ({ apiBaseUrl, columns }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // 🧠 Initialize from URL
+  // URL Params
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [orderBy, setOrderBy] = useState(searchParams.get("order") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "asc");
   const [filter, setFilter] = useState(searchParams.get("filter") || "");
   const [showModal, setShowModal] = useState(false);
 
-  // 🧠 Convert `filter` string into array for AdvancedSearchModal
+  // Rolling GPS extra params
+  const [preceding, setPreceding] = useState(1);
+  const [following, setFollowing] = useState(0);
+
+  // Convert filter string into objects
   const parseFilterString = (filterString) => {
     if (!filterString) return [];
     const parts = filterString.split(":");
@@ -34,9 +38,11 @@ const DataTable = ({ apiBaseUrl, columns }) => {
   const formatColumnName = (name) =>
     name.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 
+  // Fetch data
   const fetchData = async (page = 1, order = orderBy, sortDir = sort, filterVal = filter) => {
     try {
       setLoading(true);
+
       let url = `${apiBaseUrl}?page=${page}`;
       if (order) {
         url += `&order=${order}`;
@@ -46,7 +52,21 @@ const DataTable = ({ apiBaseUrl, columns }) => {
         url += `&filter=${encodeURIComponent(filterVal)}`;
       }
 
-      const res = await fetch(url);
+      const isRolling = apiBaseUrl.includes("/gps/delta");
+
+      const res = await fetch(url, {
+        method: isRolling ? "POST" : "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: isRolling
+          ? JSON.stringify({
+              preceding,
+              following,
+            })
+          : null,
+      });
+
       const result = await res.json();
       console.log("API Response:", result);
 
@@ -68,7 +88,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
     }
   };
 
-  // 🧠 Update URL whenever params change
+  // Update URL params
   useEffect(() => {
     const params = {};
     if (orderBy) params.order = orderBy;
@@ -78,7 +98,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
     setSearchParams(params);
   }, [orderBy, sort, filter, currentPage, setSearchParams]);
 
-  // 🧠 Refetch data when params change
+  // Refetch on state change
   useEffect(() => {
     fetchData(currentPage, orderBy, sort, filter);
   }, [currentPage, orderBy, sort, filter]);
@@ -104,6 +124,35 @@ const DataTable = ({ apiBaseUrl, columns }) => {
           🔍 Advanced Search
         </Button>
       </div>
+
+      {/* --- Rolling GPS inputs --- */}
+      {apiBaseUrl.includes("/gps/delta") && (
+        <div className="d-flex gap-3 mb-3">
+          <div>
+            <label className="me-2">Preceding</label>
+            <input
+              type="number"
+              value={preceding}
+              onChange={(e) => setPreceding(Number(e.target.value))}
+              onKeyDown={(e) => e.key === "Enter" && fetchData(1)}
+              className="form-control d-inline-block"
+              style={{ width: "90px" }}
+            />
+          </div>
+
+          <div>
+            <label className="me-2">Following</label>
+            <input
+              type="number"
+              value={following}
+              onChange={(e) => setFollowing(Number(e.target.value))}
+              onKeyDown={(e) => e.key === "Enter" && fetchData(1)}
+              className="form-control d-inline-block"
+              style={{ width: "90px" }}
+            />
+          </div>
+        </div>
+      )}
 
       <AdvancedSearchModal
         show={showModal}
