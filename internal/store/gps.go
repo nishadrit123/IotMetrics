@@ -280,7 +280,7 @@ func (s *GPSStore) GetDelta(r *http.Request, delta []byte) (any, error) {
 		err := rows.Scan(
 			&s.Model,
 			&s.Day,
-			&s.Speed,
+			&s.AvgSpeed,
 			&s.RollingAverage,
 			&s.Delta,
 		)
