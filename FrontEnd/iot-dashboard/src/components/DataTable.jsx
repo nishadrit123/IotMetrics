@@ -22,6 +22,8 @@ const DataTable = ({ apiBaseUrl, columns }) => {
   const [preceding, setPreceding] = useState(1);
   const [following, setFollowing] = useState(0);
 
+  const isRolling = apiBaseUrl.includes("/gps/delta");
+
   // Convert filter string into objects
   const parseFilterString = (filterString) => {
     if (!filterString) return [];
@@ -51,8 +53,6 @@ const DataTable = ({ apiBaseUrl, columns }) => {
       if (filterVal) {
         url += `&filter=${encodeURIComponent(filterVal)}`;
       }
-
-      const isRolling = apiBaseUrl.includes("/gps/delta");
 
       const res = await fetch(url, {
         method: isRolling ? "POST" : "GET",
@@ -154,10 +154,11 @@ const DataTable = ({ apiBaseUrl, columns }) => {
         </div>
       )}
 
+      {/* Rolling GPS will not support advanced search for last 2 columns */}
       <AdvancedSearchModal
         show={showModal}
         handleClose={() => setShowModal(false)}
-        columns={columns}
+        columns={isRolling ? columns.slice(0, -2) : columns}
         onApply={(filterString) => setFilter(filterString)}
         defaultFilters={defaultFilters}
       />

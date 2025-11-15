@@ -53,7 +53,7 @@ type Metrics struct {
 	MaxHeading          float64       `json:"maxHeading,omitempty"`
 	IsMoving            bool          `json:"is_moving,omitempty"`
 	RollingAverage      float64       `json:"rolling_avg,omitempty"`
-	Delta               float64       `json:"delta,omitempty"`
+	Delta               float64       `json:"delta"`
 
 	CurrentUsage          float64   `json:"current_usage,omitempty"`
 	AvgCurrentUsage       float64   `json:"avgCurrentUsage,omitempty"`
