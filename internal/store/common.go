@@ -165,7 +165,7 @@ func getCombinators(order string) string {
 		return fmt.Sprintf("maxMerge(%s)", order)
 	} else if strings.Contains(order, "min") {
 		return fmt.Sprintf("minMerge(%s)", order)
-	} else if strings.Contains(order, "avg") {
+	} else if strings.Contains(order, "avg") && !strings.Contains(order, "rolling") {
 		return fmt.Sprintf("avgMerge(%s)", order)
 	} else if strings.Contains(order, "sum") || strings.Contains(order, "total") {
 		return fmt.Sprintf("sumMerge(%s)", order)
