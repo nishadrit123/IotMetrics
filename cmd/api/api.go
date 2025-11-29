@@ -38,17 +38,22 @@ func (app *application) Mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{env.GetString("CORS_ALLOWED_ORIGIN", "http://localhost:5173")}, // FE URL
+		AllowedOrigins: []string{
+			env.GetString("CORS_ALLOWED_ORIGIN", "http://localhost:5173"),
+			"https://integrator-2438084.okta.com",
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
 	r.Route("/v1", func(r chi.Router) {
 
 		r.Route("/cpu", func(r chi.Router) {
+			r.Use(app.OktaAuthMiddleware)
+
 			r.Get("/statistics", app.getCPUStatistics)
 			r.Route("/aggregation", func(r chi.Router) {
 				r.Get("/location", app.getCPUAggregationPerLocation)
@@ -60,6 +65,8 @@ func (app *application) Mount() http.Handler {
 		})
 
 		r.Route("/gps", func(r chi.Router) {
+			r.Use(app.OktaAuthMiddleware)
+
 			r.Get("/statistics", app.getGPSStatistics)
 			r.Route("/aggregation", func(r chi.Router) {
 				r.Get("/location", app.getGPSAggregationPerLocation)
@@ -72,6 +79,8 @@ func (app *application) Mount() http.Handler {
 		})
 
 		r.Route("/humidity", func(r chi.Router) {
+			r.Use(app.OktaAuthMiddleware)
+
 			r.Get("/statistics", app.getHumidityStatistics)
 			r.Route("/aggregation", func(r chi.Router) {
 				r.Get("/location", app.getHumidityAggregationPerLocation)
@@ -83,6 +92,8 @@ func (app *application) Mount() http.Handler {
 		})
 
 		r.Route("/pressure", func(r chi.Router) {
+			r.Use(app.OktaAuthMiddleware)
+
 			r.Get("/statistics", app.getPressureStatistics)
 			r.Route("/aggregation", func(r chi.Router) {
 				r.Get("/location", app.getPressureAggregationPerLocation)
@@ -94,6 +105,8 @@ func (app *application) Mount() http.Handler {
 		})
 
 		r.Route("/temperature", func(r chi.Router) {
+			r.Use(app.OktaAuthMiddleware)
+
 			r.Get("/statistics", app.getTemperatureStatistics)
 			r.Route("/aggregation", func(r chi.Router) {
 				r.Get("/location", app.getTemperatureAggregationPerLocation)
@@ -104,7 +117,15 @@ func (app *application) Mount() http.Handler {
 			})
 		})
 
-		r.Post("/heatmap", app.getHeatMap)
+		r.With(app.OktaAuthMiddleware).Post("/heatmap", app.getHeatMap)
+
+		r.With(app.OktaAuthMiddleware).Post("/logout", app.OktaLogout)
+
+		// public routes
+		r.Route("/authentication", func(r chi.Router) {
+			r.Post("/login", app.OktaLogin)      // Okta Authentication
+			r.Get("/callback", app.OktaCallBack) // Okta Callback
+		})
 	})
 
 	return r

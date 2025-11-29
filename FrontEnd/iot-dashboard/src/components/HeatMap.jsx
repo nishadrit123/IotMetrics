@@ -7,6 +7,7 @@ export default function Heatmap() {
     const fetchHeatmap = async (locs = ["all"]) => {
         try {
             const res = await fetch("http://localhost:8080/v1/heatmap", {
+                credentials: "include",
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ locs })

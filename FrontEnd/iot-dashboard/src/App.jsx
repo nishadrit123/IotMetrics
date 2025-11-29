@@ -4,6 +4,9 @@ import SubTabs from "./components/SubTabs";
 import SubTabsLevel2 from "./components/SubTabsLevel2";
 import PaginationBar from "./components/PaginationBar";
 
+// Login Page
+import Login from "./pages/Login";
+
 // Static Data Pages
 import CPU from "./pages/Static/CPU";
 import Temperature from "./pages/Static/Temperature";
@@ -51,7 +54,10 @@ function App() {
         <div className="container py-4">
           <Routes>
             {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/static/cpu" replace />} />
+            <Route path="/" element={<Navigate to="/authentication/login" replace />} />
+
+            {/* Login path */}
+            <Route path="/authentication/login" element={<Login />} />
 
             {/* Static Data */}
             <Route path="/static/cpu" element={<CPU />} />

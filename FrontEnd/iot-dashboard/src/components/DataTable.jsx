@@ -56,6 +56,7 @@ const DataTable = ({ apiBaseUrl, columns }) => {
 
       const res = await fetch(url, {
         method: isRolling ? "POST" : "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
